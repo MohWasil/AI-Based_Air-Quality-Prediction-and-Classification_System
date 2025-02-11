@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      *:not(h1) {
+        font-size: 16px;
+      }
+      #box {
+        border: 1px solid black;
+        padding: 20px;
+        margin: 10px;
+      }
+      #url {
+        width: calc(100% - 150px);
+        padding: 6px 15px;
+        border-radius: 5px;
+        border: 1px solid grey;
+      }
+      #method {
+        padding: 4px 12px;
+        border-radius: 5px;
+      }
+      #body {
+        width: 100%;
+        padding: 20px;
+        height: 200px;
+      }
+      #send {
+        padding: 8px 30px;
+        border: none;
+        cursor: pointer;
+        background-color: rgb(31, 73, 73);
+        color: white;
+        border-radius: 5px;
+      }
+      #send:hover {
+        background-color: rgb(15, 34, 34);
+        transition: all 0.3s;
+      }
+      #response,
+      #error {
+        border: 1px solid grey;
+        height: 200px;
+        padding: 10px;
+      }
+      #error {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="box">
+      <input id="url" type="text" placeholder="URL:" />
+      <select id="method">
+        <option value="get">method</option>
+        <option value="get">Get</option>
+        <option value="post">Post</option>
+        <option value="put">Put</option>
+        <option value="delete">Delete</option>
+      </select>
+      <br /><br /><br /><br />
+      <textarea id="body" placeholder="Body"></textarea>
+      <br /><br />
+      <button id="send">Send</button>
+      <br /><br />
+      <div id="response">
+      </div>
+      <br />
+      <div id="error">
+      </div>
+    </div>
+    <script>
+      const sendBtn = document.getElementById("send");
+      sendBtn.addEventListener("click", function () {
+        const url = document.getElementById("url").value;
+        const method = document.getElementById("method").value;
+        const body = document.getElementById("body").value;
+        const init = {
+          method: method,
+          headers: {
+            "content-type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}",
+          }
+        }
+
+        if (method != "get") {
+          init.body = body
+        }
+        fetch(url + "/", init).then(res => {
+          var responseText = ""
+          const response = document.getElementById("response");
+          responseText += "Status: " + res.status + " " +  res.statusText + "<br>"
+          res.text().then(val => {
+            responseText += val
+            response.innerHTML = responseText
+          })
+          
+        }).catch(error => {
+          document.getElementById("error").innerHTML = error
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,804 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="{% static 'dashboard/css/style.css' %}">
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+
+    <style>
+        .error-message {
+            color: red;
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- ==================Model Start -->
+    <div class="modal fade" id="countryDetailsModal" tabindex="-1" aria-labelledby="countryDetailsModalLabel"
+        aria-hidden="true" back-drop-static="static">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="countryDetailsModalLabel">Country Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <!-- Country Name -->
+                        <div class="row text-center mb-4">
+                            <!-- CO (Carbon Monoxide) -->
+                            <div class="col-md-2 col-6 mb-4">
+                                <div class="card shadow-sm">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-smog h1 text-danger"></i>
+                                        <h5 class="mt-2">CO</h5>
+                                        <p><i class="fas fa-arrow-up text-danger"></i> Highest: <span class="fw-bold">45 µg/m³</span></p>
+                                        <p><i class="fas fa-arrow-down text-success"></i> Lowest: <span class="fw-bold">10 µg/m³</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <!-- NO2 (Nitrogen Dioxide) -->
+                            <div class="col-md-2 col-6 mb-4">
+                                <div class="card shadow-sm">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-cloud-meatball h1 text-warning"></i>
+                                        <h5 class="mt-2">NO2</h5>
+                                        <p><i class="fas fa-arrow-up text-danger"></i> Highest: <span class="fw-bold">30 µg/m³</span></p>
+                                        <p><i class="fas fa-arrow-down text-success"></i> Lowest: <span class="fw-bold">5 µg/m³</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <!-- O3 (Ozone) -->
+                            <div class="col-md-2 col-6 mb-4">
+                                <div class="card shadow-sm">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-sun h1 text-primary"></i>
+                                        <h5 class="mt-2">O3</h5>
+                                        <p><i class="fas fa-arrow-up text-danger"></i> Highest: <span class="fw-bold">60 µg/m³</span></p>
+                                        <p><i class="fas fa-arrow-down text-success"></i> Lowest: <span class="fw-bold">20 µg/m³</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <!-- PM10 (Particulate Matter 10) -->
+                            <div class="col-md-2 col-6 mb-4">
+                                <div class="card shadow-sm">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-cloud-showers-heavy h1 text-secondary"></i>
+                                        <h5 class="mt-2">PM10</h5>
+                                        <p><i class="fas fa-arrow-up text-danger"></i> Highest: <span class="fw-bold">75 µg/m³</span></p>
+                                        <p><i class="fas fa-arrow-down text-success"></i> Lowest: <span class="fw-bold">25 µg/m³</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <!-- PM2.5 (Particulate Matter 2.5) -->
+                            <div class="col-md-2 col-6 mb-4">
+                                <div class="card shadow-sm">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-wind h1 text-info"></i>
+                                        <h5 class="mt-2">PM2.5</h5>
+                                        <p><i class="fas fa-arrow-up text-danger"></i> Highest: <span class="fw-bold">50 µg/m³</span></p>
+                                        <p><i class="fas fa-arrow-down text-success"></i> Lowest: <span class="fw-bold">15 µg/m³</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <!-- SO2 (Sulfur Dioxide) -->
+                            <div class="col-md-2 col-6 mb-4">
+                                <div class="card shadow-sm">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-industry h1 text-muted"></i>
+                                        <h5 class="mt-2">SO2</h5>
+                                        <p><i class="fas fa-arrow-up text-danger"></i> Highest: <span class="fw-bold">20 µg/m³</span></p>
+                                        <p><i class="fas fa-arrow-down text-success"></i> Lowest: <span class="fw-bold">5 µg/m³</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row d-flex flex-wrap justify-content-center gap-2">
+                            <!-- Air Quality Graph -->
+                            <div class="col-md-7 col-12 my-5">
+                                <h4 class="mb-3">Air Quality Graph</h4>
+                                <canvas id="pollutionGraphCountry"></canvas>
+                            </div>
+                        
+                            <!-- Followers and Viewers Graph -->
+                            <div class="col-md-4 col-12 my-5">
+                                <h4 class="mb-3">Followers and Viewers Distribution</h4>
+                                <canvas id="followersGraphCountry"></canvas>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <script src="../static/js/countryReadMore.js"></script>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="refreshButton"
+        class="btn btn-primary border-3 position-fixed start-3 d-flex align-items-center justify-content-center shadow-lg">
+        <a href="index.html" class="text-white"><i class="fas fa-sync-alt fs-5"></i></a>
+    </div>
+
+    <!-- ==================Model End -->
+    <!-- Header -->
+    <header class="navbar navbar-expand-lg navbardars fixed-top">
+        <div class="container-fluid ">
+            <button title="sidebar" type="button" class="btn btn-light me-2" id="toggleSidebar"><i class="fas fa-bars"></i></button>
+            <span class="navbar-brand fw-bold text-white">Dashboard</span>
+            <div class="d-flex align-items-center ms-auto gap-1">
+                <!-- Messages Mega Menu -->
+                <div class="dropdown header-navgation">
+                    <button class="btn btn-dark position-relative" type="button" id="messageMenu"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-envelope"></i>
+                        <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">3</span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end message" aria-labelledby="messageMenu"
+                        style="min-width: 250px;">
+                        <h6 class="dropdown-header">Recent Messages</h6>
+                        <hr>
+                        <div class="d-flex align-items-start gap-2 mb-2 nav-message">
+                            <a href="" class="d-flex">
+                                <img src="https://via.placeholder.com/40" alt="Avatar" class="rounded-circle">
+                                <div class="p-2">
+                                    <strong>John Doe</strong>
+                                    <p class="mb-0 text-muted small">Hey! Are you free tomorrow?</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="d-flex align-items-start gap-2 mb-2 nav-message">
+                            <a href="" class="d-flex text-decoration-none">
+                                <img src="https://via.placeholder.com/40" alt="Avatar" class="rounded-circle">
+                                <div class="p-2">
+                                    <strong>Jane Smith</strong>
+                                    <p class="mb-0 text-muted small">Please review the document I sent.</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="d-flex align-items-start gap-2 mb-2 nav-message">
+                            <a href="" class="d-flex">
+                                <img src="https://via.placeholder.com/40" alt="Avatar" class="rounded-circle">
+                                <div class="p-2">
+                                    <strong>Mike Johnson</strong>
+                                    <p class="mb-0 text-muted small">Call me when you get a chance.</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="text-center">
+                            <a href="#" class="btn btn-primary btn-sm mt-2">View All Messages</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Mega Menu -->
+                <div class="dropdown">
+                    <button title="profile" class="btn btn-dark dropdown-toggle" type="button" id="profileMenu"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end p-3" aria-labelledby="profileMenu"
+                        style="min-width: 300px;">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <img src="https://via.placeholder.com/60" alt="Profile" class="rounded-circle">
+                            <div>
+                                <strong>John Doe</strong>
+                                <p class="mb-0 text-muted small">johndoe@example.com</p>
+                            </div>
+                        </div>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-user-cog me-2"></i> Account Settings
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-history me-2"></i> Activity Log
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-lock me-2"></i> Privacy Settings
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item text-danger">
+                            <i class="fas fa-sign-out-alt me-2"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="bg-light border-end position-fixed h-100"
+        style="width: 260px; z-index: 999; margin-top: 50px;">
+        <div class="accordion mx-2" id="sidebarAccordion">
+            <div class="accordion-item " style="margin-top: 10px;">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#tablesMenu" aria-expanded="true">
+                        <i class="fas fa-table me-2"></i> Tables
+                    </button>
+                </h2>
+                <div id="tablesMenu" class="accordion-collapse collapse">
+                    <div class="accordion-body">
+                        <nav class="nav flex-column">
+                            <a href="#" class="nav-link" data-target="individualTableContent">Individual Table</a>
+                            <a href="#" class="nav-link" data-target="organizationTableContent">Organization Table</a>
+                            <a href="#" class="nav-link" data-target="questionsTableContent">Questions Table</a>
+                            <a href="#" class="nav-link" data-target="organizationIdeaContent">Organization Idea</a>
+                            <a href="#" class="nav-link" data-target="individualIdeaContent">Individual Idea</a>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#airDataMenu" aria-expanded="false">
+                        <i class="fas fa-database me-2"></i> Air Pollution Data
+                    </button>
+                </h2>
+                <div id="airDataMenu" class="accordion-collapse collapse">
+                    <div class="accordion-body">
+                        <nav class="nav flex-column">
+                            <a href="#" class="nav-link" data-target="todayAirQualityIndex">Today Air Quality Index</a>
+                            <a href="#" class="nav-link" data-target="airQualityIndex">Air Quality Index</a>
+                            <a href="#" class="nav-link">Pollution Sources</a>
+                            <a href="#" class="nav-link">Health Impacts</a>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#createUser" aria-expanded="false">
+                        <i class="fas fa-save me-2"></i>Forms
+                    </button>
+                </h2>
+                <div id="createUser" class="accordion-collapse collapse">
+                    <div class="accordion-body">
+                        <nav class="nav flex-column">
+                            <a href="#" class="nav-link" data-target="createUserForms">Create Users</a>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#backupMenu" aria-expanded="false">
+                        <i class="fas fa-save me-2"></i> Backup Database
+                    </button>
+                </h2>
+                <div id="backupMenu" class="accordion-collapse collapse">
+                    <div class="accordion-body">
+                        <nav class="nav flex-column">
+                            <a href="#" class="nav-link">Export Data</a>
+                            <a href="#" class="nav-link">Import Data</a>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container">
+        <div class="row mt-4">
+            <div id="defaultContent" class="col-md-12 col-12 content-section">
+                <!-- Manin Content -->
+                <div class="row mt-4">
+                    <!-- Stats -->
+                    <div class="col-md-3">
+                        <div class="card text-white bg-success mb-3">
+                            <div class="card-body text-center">
+                                <i class="fas fa-user fa-4x mb-3"></i>
+                                <h5>Individual Accounts</h5>
+                                <h3>1,234</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-info mb-3">
+                            <div class="card-body text-center">
+                                <i class="fas fa-building fa-4x mb-3"></i>
+                                <h5>Organization Accounts</h5>
+                                <h3>567</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-warning mb-3">
+                            <div class="card-body text-center">
+                                <i class="fas fa-users fa-4x mb-3"></i>
+                                <h5>Followers</h5>
+                                <h3>9,876</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-secondary mb-3">
+                            <div class="card-body text-center">
+                                <i class="fas fa-comment-dots fa-4x mb-3"></i>
+                                <h5>Feedback</h5>
+                                <h3>9,876</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Graphs -->
+                <div class="row gap-3 graph" id="graph-content">
+                    <div class="col-md-7 col-12">
+                        <div class="card mb-4">
+                            <div class="card-header bg-primary text-white">Followers by Country</div>
+                            <div class="card-body">
+                                <canvas id="followersByCountry"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <div class="card mb-4">
+                            <div class="card-header bg-primary text-white">Accounts Distribution</div>
+                            <div class="card-body">
+                                <canvas id="accountsDistribution"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--Table Part indivisial User-->
+            <div id="individualTableContent" class="content-section container" style="display: none;">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <a href="index.html" class="btn btn-primary back">Back</a>
+                    </div>
+                    <div class="col text-center">
+                        <h2 class="mb-4">indivisial Information</h2>
+                    </div>
+                </div>
+
+                <div class="table-responsive border-3 border-success rounded-1">
+                    <table class="table table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th class="col-auto" style="white-space: nowrap;">Full Name</th>
+                                <th class="col-auto">Email Address</th>
+                                <th class="col-auto">Phone Number</th>
+                                <th class="col-auto">Gender</th>
+                                <th class="col-auto">Country</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- Rows will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Fixed Pagination -->
+                <nav aria-label="Page navigation" class="navigation">
+                    <ul class="pagination" id="pagination">
+                        <li class="page-item" id="previous-page"><a class="page-link" href="#">Previous</a></li>
+                        <!-- Page links will be dynamically added here -->
+                        <li class="page-item" id="next-page"><a class="page-link" href="#">Next</a></li>
+                    </ul>
+                </nav>
+
+            </div>
+
+            <!-- Table Organization User -->
+            <div id="organizationTableContent" class="content-section" style="display: none;">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <a href="index.html" class="btn btn-primary back">Back</a>
+                    </div>
+                    <div class="col text-center">
+                        <h2 class="mb-4">Organization Information</h2>
+                    </div>
+                </div>
+                <div class="table-responsive border-3 border-success rounded-1">
+                    <table class="table table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th class="col-auto" style="white-space: nowrap;">Organization Name</th>
+                                {% comment %} <th class="col-auto" style="white-space: nowrap;">Responsiable Name</th> {% endcomment %}
+                                <th class="col-auto">Email Address</th>
+                                <th class="col-auto">Phone Number</th>
+                                <th class="col-auto">Activity</th>
+                                <th class="col-auto">Address</th>
+                                <th class="col-auto">Country</th>
+                            </tr>
+                        </thead>
+                        <tbody id="organization-table-body">
+                            <!-- Rows will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Fixed Pagination -->
+                <nav aria-label="Page navigation" class="navigation">
+                    <ul class="pagination" id="organization-pagination">
+                        <li id="org-previous-page" class="page-item"><a href="#" class="page-link">Previous</a></li>
+                        <li id="org-next-page" class="page-item"><a href="#" class="page-link">Next</a></li>
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Table Qustion -->
+            <div id="questionsTableContent" class="content-section" style="display: none;">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <a href="index.html" class="btn btn-primary back">Back</a>
+                    </div>
+                    <div class="col text-center">
+                        <h2 class="mb-4">Questions Information</h2>
+                    </div>
+                </div>
+                <div class="table-responsive border-3 border-success rounded-1">
+                    <table class="table table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th class="col-auto" style="white-space: nowrap;">Name</th>
+                                <th class="col-auto" style="white-space: nowrap;">Phone</th>
+                                <th class="col-auto">Email</th>
+                                <th class="col-auto">Qustion</th>
+                            </tr>
+                        </thead>
+                        <tbody id="questionTableBody">
+                            <!-- Rows will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Fixed Pagination -->
+                <nav aria-label="Page navigation" class="navigation">
+                    <ul class="pagination" id="qustionPagination">
+                        <li id="qustionPreviousPage" class="page-item"><a href="#" class="page-link">Previous</a></li>
+                        <li id="qustionNextPage" class="page-item"><a href="#" class="page-link">Next</a></li>
+                    </ul>
+                </nav>
+
+
+            </div>
+
+            <!-- Table Organization Idea -->
+            <div id="organizationIdeaContent" class="content-section" style="display: none;">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <a href="index.html" class="btn btn-primary back">Back</a>
+                    </div>
+                    <div class="col text-center">
+                        <h2 class="mb-4">Organization Idea Information</h2>
+                    </div>
+                </div>
+                <div class="table-responsive border-3 border-success rounded-1">
+                    <table class="table table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th class="col-auto" style="white-space: nowrap;">Organization Name</th>
+                                {% comment %} <th class="col-auto" style="white-space: nowrap;">Responsible Person</th> {% endcomment %}
+                                <th class="col-auto">Offecial Email</th>
+                                <th class="col-auto">Pre-Phone</th>
+                                <th class="col-auto">Alter-Phone</th>
+                                <th class="col-auto">Area Expertise</th>
+                                <th class="col-auto">Country</th>
+                                <th class="col-auto">Recommendation</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orgIdeaTableBody">
+                            <!-- Rows will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Fixed Pagination -->
+                <nav aria-label="Page navigation" class="navigation">
+                    <ul class="pagination" id="OrgIdeaPagination">
+                        <li id="orgIdeaPreviousPage" class="page-item"><a href="#" class="page-link">Previous</a></li>
+                        <li id="orgIdeaNextPage" class="page-item"><a href="#" class="page-link">Next</a></li>
+                    </ul>
+                </nav>
+
+
+            </div>
+
+            <!-- Table Indivisial Idea -->
+            <div id="individualIdeaContent" class="content-section" style="display: none;">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <a href="index.html" class="btn btn-primary back">Back</a>
+                    </div>
+                    <div class="col text-center">
+                        <h2 class="mb-4">Individual Idea Information</h2>
+                    </div>
+                </div>
+                <div class="table-responsive border-3 border-success rounded-1">
+                    <table class="table table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th class="col-auto" style="white-space: nowrap;">Full Name</th>
+                                <th class="col-auto">Email</th>
+                                <th class="col-auto">Phone</th>
+                                <th class="col-auto">Expertise</th>
+                                <th class="col-auto">Country</th>
+                                <th class="col-auto">Idea</th>
+                            </tr>
+                        </thead>
+                        <tbody id="indivisailIdeaTableBody">
+                            <!-- Rows will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Fixed Pagination -->
+                <nav aria-label="Page navigation" class="navigation">
+                    <ul class="pagination" id="indivisailPagination">
+                        <li id="indivisialPreviousPage" class="page-item"><a href="#" class="page-link">Previous</a></li>
+                        <li id="indivisialNextPage" class="page-item"><a href="#" class="page-link">Next</a></li>
+                    </ul>
+                </nav>
+
+
+            </div>
+        </div>
+
+        <!-- The Seconde Part -->
+         <div class="row mt-4">
+            <!-- Today Table Air Qaultiy Index -->
+            <div id="todayAirQualityIndex" class="content-section" style="display: none;">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <a href="index.html" class="btn btn-primary back">Back</a>
+                    </div>
+                    <div class="col text-center">
+                        <h2 class="mb-4">Air Quality Index Information</h2>
+                    </div>
+                </div>
+                <div class="table-responsive border-3 border-success rounded-1">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th class="col-auto">Country</th>
+                                <th class="col-auto">State</th>
+                                <th class="col-auto">Latitude</th>
+                                <th class="col-auto">Longitude</th>
+                                <th class="col-auto">AQI</th>
+                                <th class="col-auto">CO</th>
+                                <th class="col-auto">NO</th>
+                                <th class="col-auto">NO₂</th>
+                                <th class="col-auto">O₃</th>
+                                <th class="col-auto">SO₂</th>
+                                <th class="col-auto">PM₂.₅</th>
+                                <th class="col-auto">PM₁₀</th>
+                                <th class="col-auto">NH₃</th>
+                                <th class="col-auto">Local Time</th>
+                                <th class="col-auto">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="todayAirQualityIndexTableBody">
+                            <!-- Rows will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Fixed Pagination -->
+                <nav aria-label="Page navigation" class="navigation">
+                    <ul class="pagination" id="todayAirQualityIndexPagination">
+                        <li id="todayAirQualityIndexPreviousPage" class="page-item"><a href="#" class="page-link">Previous</a></li>
+                        <li id="todayAirQualityIndexNextPage" class="page-item"><a href="#" class="page-link">Next</a></li>
+                    </ul>
+                </nav>
+            
+            
+            </div>
+            <!-- Air Quality Index -->
+            <div id="airQualityIndex" class="content-section" style="display: none;">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <a href="index.html" class="btn btn-primary back">Back</a>
+                    </div>
+                    <div class="col text-center">
+                        <h2 class="mb-4">Air Quality Index Information</h2>
+                    </div>
+                </div>
+                <div class="table-responsive border-3 border-success rounded-1">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th class="col-auto">Country</th>
+                                <th class="col-auto">State</th>
+                                <th class="col-auto">Latitude</th>
+                                <th class="col-auto">Longitude</th>
+                                <th class="col-auto">AQI</th>
+                                <th class="col-auto">CO</th>
+                                <th class="col-auto">NO</th>
+                                <th class="col-auto">NO₂</th>
+                                <th class="col-auto">O₃</th>
+                                <th class="col-auto">SO₂</th>
+                                <th class="col-auto">PM₂.₅</th>
+                                <th class="col-auto">PM₁₀</th>
+                                <th class="col-auto">NH₃</th>
+                                <th class="col-auto">Local Time</th>
+                                <th class="col-auto">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="airQualityIndexTableBody">
+                            <!-- Rows will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Fixed Pagination -->
+                <nav aria-label="Page navigation" class="navigation">
+                    <ul class="pagination" id="airQualityIndexPagination">
+                        <li id="airQualityIndexPreviousPage" class="page-item"><a href="#" class="page-link">Previous</a></li>
+                        <li id="airQualityIndexNextPage" class="page-item"><a href="#" class="page-link">Next</a></li>
+                    </ul>
+                </nav>
+            
+            
+            </div>
+         </div>
+
+         <!-- Forms -->
+        <div class="row mt-4">
+            <!-- Table Air Qaultiy Index -->
+            <div id="createUserForms" class="content-section" style="display: none;">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <a href="index.html" class="btn btn-primary back">Back</a>
+                    </div>
+                    <div class="col text-center">
+                        <h2 class="mb-4 fw-bold">Create Admin User</h2>
+                    </div>
+                </div>
+                <div class="col-md-8 col-sm-10 col-12 border border-1 border-secondary mb-3 rounded-1 mx-auto d-flex flex-column align-items-center">
+                    <h1 class="text-center mt-5 fw-bold">Form</h1>
+                    <br>
+                    <form id="registrationForm"  class="w-100" method="post">
+                        <!-- Full Name and Email -->
+                        <div class="row justify-content-center">
+                            <div class="col-md-5 col-12 mb-1">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="fullname" placeholder="Full Name" required>
+                                    <label for="fullname">Full Name</label>
+                                    <div class="error-message" id="fullname-error"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-5 col-12 mb-1">
+                                <div class="form-floating">
+                                    <input type="email" class="form-control" id="email" placeholder="Email Address" required>
+                                    <label for="email">Email Address</label>
+                                    <div class="error-message" id="email-error"></div>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <!-- Phone Number and Password -->
+                        <div class="row justify-content-center">
+                            <div class="col-md-5 col-12 mb-1">
+                                <div class="form-floating">
+                                    <input type="tel" class="form-control" id="phone" placeholder="Phone Number" required>
+                                    <label for="phone">Phone Number</label>
+                                    <div class="error-message" id="phone-error"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-5 col-12 mb-1">
+                                <div class="form-floating">
+                                    <input type="password" class="form-control" id="password" placeholder="Password" required>
+                                    <label for="password">Password</label>
+                                    <div class="error-message" id="password-error"></div>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <!-- Confirm Password and Admin Section -->
+                        <div class="row justify-content-center">
+                            <div class="col-md-5 col-12 mb-1">
+                                <div class="form-floating">
+                                    <input type="password" class="form-control" id="confirm-password" placeholder="Confirm Password"
+                                        required>
+                                    <label for="confirm-password">Confirm Password</label>
+                                    <div class="error-message" id="confirm-password-error"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-5 col-12 mb-1">
+                                <div class="form-floating">
+                                    <select class="form-select" id="admin-section" required>
+                                        <option value="user-management">User Management</option>
+                                        <option value="content-management">Content Management</option>
+                                        <option value="system-settings">System Settings</option>
+                                    </select>
+                                    <label for="admin-section">Admin Section</label>
+                                    <div class="error-message" id="admin-section-error"></div>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <!-- Gender -->
+                        <div class="row justify-content-center mb-3">
+                            <div class="col-md-5 col-12">
+                                <div class="form-floating">
+                                    <select class="form-select" id="gender" required>
+                                        <option value="" disabled selected>Select Gender</option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                    <label for="gender">Gender</label>
+                                    <div class="error-message" id="gender-error"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-5 col-12 mb-1">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="userName" placeholder="User Name" required>
+                                    <label for="userName">User Name</label>
+                                    <div class="error-message" id="username-error"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Alerts -->
+                        <div class="row justify-content-start mb-3">
+                            <div class="col-md-5 col-12 mb-1">
+                                <div class="form-floating">
+                                    <p id="crurrectTextAlert" class="text-success " style="margin-left: 30px;"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Submit Button -->
+                        <div class="d-flex justify-content-center mb-3">
+                            <button type="submit" form="registrationForm" class="btn btn-primary col-md-5 col-auto">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-3 bg-light mt-4">
+        &copy; 2025 Your Website Name. All rights reserved.
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'dashboard/js/main.js' %}"></script>
+    <script src="{% static 'dashboard/js/sidebar.js' %}"></script>
+    <script src="{% static 'dashboard/js/indivisialTable.js' %}"></script>
+    <script src="{% static 'dashboard/js/organizationTable.js' %}"></script>
+    <script src="{% static 'dashboard/js/qustionTable.js' %}"></script>
+    <script src="{% static 'dashboard/js/orgIdeaTable.js' %}"></script>
+    <script src="{% static 'dashboard/js/indivisailIdeaTable.js' %}"></script>
+    <script src="{% static 'dashboard/js/airQaulityIndexTable.js' %}"></script>
+    <script src="{% static 'dashboard/js/todayAirQaulityIndexTable.js' %}"></script>
+    <script src="{% static 'dashboard/js/countryReadMore.js' %}"></script>
+    <script src="{% static 'dashboard/js/adminRegistration.js' %}"></script>
+</body>
+
+</html>

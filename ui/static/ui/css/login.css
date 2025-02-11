@@ -1,0 +1,60 @@
+ /* Body Background Styling */
+ body {
+     background: url("../images/img/login.jpeg") no-repeat center center fixed;
+     background-size: cover;
+     min-height: 80vh;
+     margin: 5px;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+ }
+
+ /* Login Form Styling */
+ .login-form {
+     padding: 30px;
+     background: rgba(255, 255, 255, 0.9);
+     border-radius: 8px;
+     width: 100%;
+     max-width: 400px;
+ }
+
+ .login-form h2 {
+     font-size: 28px;
+     font-weight: bold;
+     margin-bottom: 20px;
+ }
+
+ .borderdashed {
+     border: dashed 1px #a7bd98;
+     border-radius: 4px;
+ }
+
+ .logo {
+     width: 135px;
+     margin-top: -15px;
+ }
+
+ /* Full Screen Form in Small Screens */
+ @media (max-width: 320px) {
+     .logo {
+         width: 100px;
+         margin-top: -30px;
+     }
+ }
+
+ @media (max-width: 768px) {
+     .logo {
+         width: 100px;
+     }
+ }
+
+ @media (max-width: 991px) {
+     .login-form {
+         border-radius: 8px;
+         max-width: none;
+         height: 70vh;
+         display: flex;
+         flex-direction: column;
+         justify-content: center;
+     }
+ }

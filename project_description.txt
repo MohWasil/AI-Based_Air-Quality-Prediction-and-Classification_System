@@ -1,0 +1,94 @@
+Hi Everyone
+
+please check out the project and if you have any questions just ask me anytime and i'll try to fix them in your satisfaction.
+
+
+first of all when you open the project try to run
+python manage.py makemigrations
+python manage.py migrate
+
+commands to save some unsaved models to database
+
+admin username and password
+email: suhailsammim32@gmail.com
+passoword: suhail123
+
+
+i think most of the project parts are done and is ready for production to some extent
+most of the backend parts are complete but about the
+connection to frontend some of them are not connected like plotly
+you can do this via ajax method using fetch method to connect to api of the
+backend and get that data and bring them to frontend
+
+i am running out of time these days
+i should really say sorry in this part, i could do it in future days (i mean these connections and ....)
+but i do know that you are reaching the deadline and that would be too late so i just leave them to you dudes 😌
+
+
+This project is an api based project and there is an app named ui that contains frontend files and
+overall project overview
+there is 5 apps in this project
+
+1- Accounts:
+there is defined three types of accounts there:
+  Individual Account
+  Organizational Account
+  Admin Account
+
+also apis for making new accounts through form ajax api calls that are in frontend
+
+
+2- dashboard:
+
+this app is to control the admin site and can only be accessed
+through admin access
+you should login with email, passoword
+email: suhailsammim32@gmail.com
+password: suhail123
+
+this is the admin account which by this you can access full to website including Individual and Organizational predictions
+some parts are done by backend like stats (number of Individual users, Organizational users, number of followers)
+and can be accessed through frontend by an api call
+
+3- feedbacks:
+
+this app is about getting feedbacks from users that includes (Individual idead, Organizational ideas, questions, contacts)
+
+
+4- predict:
+
+this part is all about predictions and ML models it maybe there that some parts are left
+the csv data is stored in db about the all countries predictions i put that in no use
+the prediction is done throught api call you can access the data in a format like this
+when you call the api "/api/predict/predict/" via post method and passing four inputs of (country, state, latitude, and longitude)
+which is done in location.js static file
+it will give you a json format like this:
+
+{
+    "state": "kabul",
+    "latitude": 12.232,
+    "longitude": 34.123,
+    "classification_result": "Fair",
+    "feature_importance": [('o2', 32), ('nh3', 23)......],
+    "predic_res": [('1H', 'Fair'), ('2H', 'Moderate')], ---> Ask Wasil jan for more accurate information and format about the ML Model
+    "advice_message": ['keep yourself safe', 'put on mask', 'don't ride bicycle'], ---> (the gpt advice in such format)
+  }
+
+this information can be get throught api call but unfortunately
+I can not connect them to frontend to plotly.js and graphs,
+I count you on this dudes 🐱
+
+and also in frontend in Individual-use
+there is a table that shows the amount of co2,
+or other features of future like 2 hours later, 4 hours later
+but there is no such thing in ML model
+the model shows the feature_importance of the now time
+and for the future times in only outputs the Air Quality Index
+(talk to Wasil more about this)
+
+5- ui:
+this app is all about ui and frontend files, .......
+
+
+
+THIS WAS THE DESCRIPTION OF THE PROJECT I KNOW THERE ARE SOME PARTS LEFT BUT I THINK IT IS READY TO GO ON PRODUCTION FOR TEST

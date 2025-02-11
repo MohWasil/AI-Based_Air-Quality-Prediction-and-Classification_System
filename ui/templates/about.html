@@ -1,0 +1,648 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Quality Real Time Data Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+
+    <!-- Optional for Font Awesome Icons -->
+    <!-- Make sure you include Font Awesome CDN link -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- Load CesiumJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cesium/1.89/cesium.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cesium/1.89/cesium.min.css" rel="stylesheet">
+
+
+    <link rel="stylesheet" href="{% static 'ui/css/style.css' %}">
+
+    <!-- Add Plotly.js Library -->
+    <script src="https://cdn.plot.ly/plotly-2.26.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Include Leaflet 1.4.x -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
+
+    <!-- Include Windy API library -->
+    <script src="https://api.windy.com/assets/libBoot.js"></script>
+
+
+
+
+
+</head>
+
+<body>
+
+    <!-- Back to Top Button -->
+    <div id="backToTop" class="d-flex">
+        <i class="fas fa-arrow-up" style="font-size: 1.5rem; color: rgb(255, 255, 255);"></i>
+    </div>
+
+    <!-- Messenger Bubble -->
+    <div id="messengerBubble" class="shadow" data-bs-toggle="tooltip" data-bs-placement="bottom"
+        title="Get Information!">
+        <i class="fa-solid fa-message"></i>
+    </div>
+    <!-- Chat Body -->
+    <div id="chatBox">
+        <div id="chatHeader">Messenger</div>
+        <!-- Accodion Only User Click Open it -->
+        <div class="accordion" id="accordionExample">
+            <!--The First Ithem -->
+            <div class="accordion- p-1 accordion-border">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                        Account Type For Air Prediction
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne"
+                    data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <div class="list-group">
+                            <button class="list-group-item list-group-item-action"
+                                onclick="showDescription('induviaccount')">Individual User</button>
+                            <button class="list-group-item list-group-item-action"
+                                onclick="showDescription('orgaccount')">Organization User</button>
+                        </div>
+
+                        <!-- Description section -->
+                        <div id="description" class="mt-1 text-center">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--The Seconde Ithem-->
+            <div class="accordion-item p-1 accordion-border">
+                <h2 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        Send Your Question?
+                    </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                    data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <form id="chatFooter" class="d-block needs-validation" novalidate>
+                            <!-- Name Field -->
+                            <div class="form-floating mb-1 col-md-12 col-12">
+                                <input type="text" class="form-control" id="bubblemessengerName" placeholder="Name"
+                                    required>
+                                <label for="bubblemessengerName">Name</label>
+                                <div class="invalid-feedback">Please enter your name.</div>
+                            </div>
+
+                            <!-- Phone Field -->
+                            <div class="form-floating mb-1 col-md-12 col-12">
+                                <input type="tel" class="form-control" id="bubblemessengerPhone" placeholder="Phone"
+                                    pattern="^\+?[0-9\s\-]{7,15}$" required>
+                                <label for="bubblemessengerPhone">Phone</label>
+                                <div class="invalid-feedback">Please enter a valid phone number (e.g., +93123456).</div>
+                            </div>
+
+                            <!-- Email Field -->
+                            <div class="form-floating mb-1 col-md-12 col-12">
+                                <input type="email" class="form-control" id="bubblemessengerEmail" placeholder="Email"
+                                    required>
+                                <label for="bubblemessengerEmail">Email</label>
+                                <div class="invalid-feedback">Please enter a valid email address.</div>
+                            </div>
+
+                            <!-- Question Field -->
+                            <div class="form-floating mb-1 col-md-12 col-12">
+                                <textarea class="form-control" id="bubblemessengerQuestion" placeholder="Question"
+                                    style="height: 100px;" required></textarea>
+                                <label for="bubblemessengerQuestion">Question</label>
+                                <div class="invalid-feedback">Please enter your question.</div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit"
+                                class="btn btn-primary mt-2 col-md-12 col-12 btn-chat-submit">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Accodion Only User Click Open it -->
+    </div>
+    <!-- header -->
+    <header class="text-white text-center py-3">
+        <h1 class="text-center">Air Quality Prediction</h1>
+        <p class="text-center">Real-Time Air Quality Prediction and Classification System</p>
+    </header>
+     <!-- Navbar Section -->
+     <nav class="navbar navbar-expand-lg navbar-light bg-light" id="home">
+        <div class="container bg-light">
+            <!-- Logo on the Left -->
+            <a class="navbar-brand" href="{% url 'index' %}">
+                <img src="{% static 'ui/images/icon/air quality prediction.svg' %}" alt="Logo" width="100" height="100"
+                    style="margin-top: -20px; margin-bottom: -10px;">
+            </a>
+
+            <!-- Centered Menu Items -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto text-center">
+                    <li class="nav-item">
+                        <a class="nav-link active fw-bold" aria-current="page" href="{% url 'index' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold" href="{% url 'index' %}#prediction">Prediction</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold" href="{% url 'index' %}#overvision">Vision</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold" href="{% url 'index'%}#levelair">Levels</a>
+                    </li>
+                </ul>
+                <!-- Login Icon on the Right -->
+                 {% if user.is_authenticated %}
+        
+                <!-- Profile -->
+                <div class="btn-group d-flex justify-content-center">
+                    <!-- Button to trigger the dropdown -->
+                    <a href="#"
+                       class="btn btn-secondary dropdown-toggle align-items-center"
+                       type="button"
+                       data-bs-toggle="dropdown"
+                       data-bs-boundary="viewport" aria-expanded="false" style="background-color: transparent; border: none;">
+                      <i class="fa-solid fa-circle-user" style="font-size: 2rem; color: #538221;"></i>
+                    </a>
+                  
+                    <!-- Dropdown Menu aligned to the end of the button -->
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <a class="dropdown-item" href="#profileOffcanvas"
+                           data-bs-toggle="offcanvas"
+                           data-bs-target="#profileOffcanvas"
+                           aria-controls="profileOffcanvas">
+                          <i class="fa-solid fa-cogs" style="margin-right: 10px;"></i>
+                          Account Settings
+                        </a>
+                      </li>
+                      <li>
+                        <a class="dropdown-item" href="/api/accounts/logout">
+                          <i class="fa-solid fa-sign-out-alt" style="margin-right: 10px;"></i>
+                          Log Out
+                        </a>
+                      </li>
+                    </ul>
+                  </div>                  
+                 {% else %}
+                 <a href="{% url 'login' %}"
+                    class="navbar-login-icon d-flex justify-content-center ms-auto text-decoration-none loginpro"
+                    data-bs-toggle="tooltip" data-bs-placement="bottom" title="Login">
+                    <i class="fa-solid fa-right-to-bracket" style="font-size: 2rem;"></i>
+                </a> 
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+
+    <div class="container mt-5">
+
+        <h2 class="text-start display-3 fw-bold">What we do on this platform and what are our goals?</h2>
+        <br>
+        <br>
+        <section class="row">
+            <!-- Left Side: Text -->
+            <div class="col-md-8">
+                <h2>Our main goals</h2>
+                <p class="text-start mx-1 me-1">
+                    Real-time air pollution prediction platforms are essential tools for monitoring and forecasting air
+                    quality, leveraging
+                    open data sources like OpenWeather, IQAir, and the World Health Organization (WHO). These platforms
+                    analyze pollutants
+                    such as PM2.5, PM10, nitrogen dioxide (NO₂), sulfur dioxide (SO₂), and ozone (O₃), which are
+                    critical indicators of air
+                    quality and public health risks. Advanced algorithms and machine learning models process live sensor
+                    data from ground
+                    stations, satellites, and meteorological systems to provide accurate predictions. For instance,
+                    OpenWeather integrates
+                    global weather forecasts with air quality data, enabling individuals and policymakers to make
+                    informed decisions about
+                    outdoor activities and health precautions. Similarly, IQAir’s AirVisual platform offers global and
+                    local air quality
+                    insights, ranking cities by pollution levels and alerting users about unhealthy air conditions. Such
+                    tools not only
+                    empower users to understand the current air quality but also predict trends that are crucial for
+                    urban planning and
+                    disaster preparedness.
+
+                    <span class="d-block mt-2"></span>
+
+                    A distinguishing feature of these platforms is their ability to send offline alerts and updates,
+                    ensuring users stay
+                    informed even in connectivity outages. This functionality is particularly valuable during
+                    emergencies, such as sudden
+                    spikes in PM2.5 levels caused by wildfires, industrial emissions, or adverse weather conditions. The
+                    platforms use SMS,
+                    push notifications, or email alerts to deliver critical information to affected populations. By
+                    doing so, they bridge
+                    the gap between real-time monitoring and actionable communication, especially in regions where
+                    internet access is
+                    unreliable. Leveraging the World Health Organization’s air quality standards, these systems provide
+                    tailored health
+                    advisories, such as reducing outdoor exposure or wearing masks during high-pollution events. Through
+                    these efforts,
+                    real-time air pollution prediction platforms not only raise awareness but also contribute
+                    significantly to public
+                    health, fostering resilience in the face of environmental challenges.
+                </p>
+
+                <h2>
+                    Responsibilities of Individuals in Maintaining Air Quality
+                </h2>
+                <p class="text-start mx-1 me-1">
+                    Individuals have a significant role in reducing air pollution and ensuring a cleaner environment.
+                    The World Health
+                    Organization (WHO) and U.S. Environmental Protection Agency (EPA) recommend personal actions to
+                    mitigate air pollution,
+                    including reducing the use of vehicles, adopting cleaner energy sources, and conserving energy. By
+                    actively engaging in
+                    these practices, individuals contribute to healthier communities and reduced exposure to harmful
+                    pollutants.
+                    Additionally, choosing sustainable transportation options and minimizing waste burning are pivotal
+                    in reducing air
+                    contamination.
+
+                    <!-- About Content -->
+                <div class="content">
+                    <h6 class="heading">Key Factors Contributing to Air Pollution</h6>
+                    <p>Here are actions individuals should avoid to help maintain air quality:</p>
+
+                    <div class="list-item">
+                        <i class="fas fa-check icon"></i> <strong>Excessive Vehicle Use:</strong> Opt for public
+                        transportation, carpooling, walking, or cycling instead.
+                    </div>
+                    <div class="list-item">
+                        <i class="fas fa-check icon"></i> <strong>Burning Waste Materials:</strong> Avoid burning
+                        leaves,
+                        plastics, and other waste products.
+                    </div>
+                    <div class="list-item">
+                        <i class="fas fa-check icon"></i> <strong>Using Non-Energy Efficient Appliances:</strong> Upgrade
+                        to
+                        energy-efficient appliances and reduce electricity usage.
+                    </div>
+                    <div class="list-item">
+                        <i class="fas fa-check icon"></i> <strong>Improper Disposal of Industrial Waste:</strong>
+                        Dispose of
+                        waste responsibly to prevent toxic emissions.
+                    </div>
+                    <div class="list-item">
+                        <i class="fas fa-check icon"></i> <strong>Open Burning of Biomass:</strong> Use alternative
+                        methods
+                        for heating or cooking, such as clean energy.
+                    </div>
+
+                </div>
+                </p>
+
+                <h2>
+                    Responsibilities and obligations of factories in protecting the environment and preventing air pollution
+                </h2>
+
+                <p class="me-1 mx-1 text-start">
+                    Municipalities and industrial sectors hold significant responsibilities in mitigating air pollution, guided by
+                    international environmental laws and best practices. The Clean Air Act (CAA) mandates that both state and local
+                    governments, along with industries, implement measures to control air pollution from various sources, including
+                    vehicles, factories, and power plants. <a href="https://www.epa.gov/clean-air-act-overview" class="text-decoration-none linkhint fw-bold">ENVIRONMENTAL PROTECTION AGENCY</a> This involves adopting cleaner technologies, enhancing energy efficiency, and adhering to emission standards to protect
+                    air quality and public health.
+
+                    <span class="d-block mt-2"></span>
+
+                    Additionally, the European Union's environmental policy emphasizes principles of precaution and prevention, requiring
+                    municipalities and industries to integrate air quality considerations into sectors such as transport, energy, and
+                    agriculture. <a href="https://www.europarl.europa.eu/factsheets/en/sheet/71/environment-policy-general-principles-and-basic-framework" class="text-decoration-none fw-bold linkhint">EUROPEAN PARLIAMENT</a>  This includes implementing low-emission zones, promoting sustainable urban planning, and ensuring compliance with
+                    regulations aimed at reducing pollutants.
+
+                    <span class="d-block mt-2"></span>
+                    To effectively reduce air pollution, municipalities and industries should avoid the following practices and adopt
+                    cleaner alternatives:
+
+                    <h6 class="text-danger mb-2 fw-bold">Actions to Avoid</h6>
+
+                    <ul class="list-unstyled">
+                        <li class="mb-1">
+                            <i class="fas fa-times text-danger me-2"></i> Burning municipal and industrial waste materials.
+                        </li>
+                        <li class="mb-1">
+                            <i class="fas fa-times text-danger me-2"></i> Utilizing fuels with high sulfur content in industrial
+                            processes.
+                        </li>
+                        <li class="mb-1">
+                            <i class="fas fa-times text-danger me-2"></i> Operating without adequate emission control technologies.
+                        </li>
+                        <li class="mb-1">
+                            <i class="fas fa-times text-danger me-2"></i> Relying on outdated and polluting public transit vehicles.
+                        </li>
+                        <li class="mb-1">
+                            <i class="fas fa-times text-danger me-2"></i> Conducting industrial activities without adherence to
+                            environmental standards.
+                        </li>
+                    </ul>
+                    
+                    <!-- Recommended Alternatives -->
+                    <h6 class="text-success mt-4 mb-2 fw-bold">Recommended Alternatives</h2>
+                    <ul class="list-unstyled">
+                        <li class="mb-1">
+                            <i class="fas fa-check text-success me-2"></i> Implement comprehensive waste management and recycling
+                            programs.
+                        </li>
+                        <li class="mb-1">
+                            <i class="fas fa-check text-success me-2"></i> Transition to low-sulfur fuels or renewable energy
+                            sources.
+                        </li>
+                        <li class="mb-1">
+                            <i class="fas fa-check text-success me-2"></i> Install and maintain advanced filtration and scrubbing
+                            systems.
+                        </li>
+                        <li class="mb-1">
+                            <i class="fas fa-check text-success me-2"></i> Invest in electrified and efficient public transportation
+                            options.
+                        </li>
+                        <li class="mb-1">
+                            <i class="fas fa-check text-success me-2"></i> Implement cleaner production techniques and comply with
+                            international environmental regulations.
+                        </li>
+                    </ul>
+                </p>
+
+                <!-- goverment -->
+                 <h2>
+                    Government Responsibilities in Preventing Air Pollution
+                 </h2>
+                 <p class="me-1 mx-1 text-start">
+                    Governments play a vital role in reducing air pollution and protecting the environment based on global standards. Their
+                    responsibilities include developing and implementing policies and regulations aimed at reducing greenhouse gas
+                    emissions, controlling industrial pollution, and improving urban air quality. These laws must align with international
+                    agreements such as the Kyoto Protocol and the Paris Agreement.
+
+                    <span class="d-block mt-2"></span>
+                    Governments should prioritize sustainable initiatives in transportation, waste management, and renewable energy. This
+                    involves investing in green infrastructure like electric public transportation, promoting clean energy sources such as
+                    wind and solar power, and regularly monitoring air quality. Additionally, governments must enforce strict regulations
+                    for industries to control emissions and adopt clean technologies. Public awareness campaigns and education about
+                    individual and collective responsibilities in reducing pollution are also critical tasks for governments to fulfill.
+
+                    Key Measures for Air Pollution Prevention by Governments:
+                    <div class="section">
+                        <h6 class="fw-bold">Actions to Avoid:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-times text-danger me-2"></i><strong>Weak Environmental Laws:</strong> Lack of strict
+                                monitoring and regulations for pollutant emissions.</li>
+                            <li><i class="fas fa-times text-danger me-2"></i><strong>Reliance on Non-Renewable Energy:</strong>
+                                Continued dependence on coal and fossil fuels.</li>
+                            <li><i class="fas fa-times text-danger me-2"></i><strong>Poor Waste Management:</strong> Failing to
+                                implement effective waste recycling and disposal systems.</li>
+                            <li><i class="fas fa-times text-danger me-2"></i><strong>Support for Polluting Industries:</strong>
+                                Allowing industries to operate without emissions controls.</li>
+                        </ul>
+                    </div>
+                    <div class="section">
+                        <h6 class="fw-bold">Recommended Alternatives:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i><strong>Enforce Environmental Regulations:</strong>
+                                Strictly monitor and control industrial pollutant emissions.</li>
+                            <li><i class="fas fa-check text-success me-2"></i><strong>Invest in Renewable Energy:</strong> Promote
+                                the use of wind, solar, and biomass energy.</li>
+                            <li><i class="fas fa-check text-success me-2"></i><strong>Develop Green Transportation:</strong>
+                                Implement electric public transport systems and urban cycling projects.</li>
+                            <li><i class="fas fa-check text-success me-2"></i><strong>Public Education:</strong> Raise awareness
+                                among citizens about reducing their carbon footprint.</li>
+                        </ul>
+                    </div>
+
+                    <p> <a href="https://factor.niehs.nih.gov/2024/12/papers/dir#a4" class="text-decoration-none linkhint fw-bold" target="_blank">Read more about some factor</a></p>
+                 </p>
+
+
+                <hr>
+                <h3>Resources</h3>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check-circle mx-2 linkhint"></i> <a
+                            href="https://www.who.int/europe/publications/i/item/WHO-EURO-2024-9115-48887-72806"
+                            target="_blank" class="text-decoration-none">World Health Organization - Actions for Air
+                            Quality</a>
+                    </li>
+                    <li><i class="fas fa-check-circle mx-2 linkhint"></i> <a
+                            href="https://www.airnow.gov/education/what-you-can-do" class="text-decoration-none"
+                            target="_blank">EPA - What You Can Do About Air
+                            Pollution</a>
+                    </li>
+                    <li><i class="fas fa-check-circle mx-2 linkhint"></i> <a
+                            href="https://www.unep.org/topics/sustainable-development-goals" class="text-decoration-none"
+                            target="_blank"> UN Environment Programme: UNEP</a>
+                    </li>
+                    <li><i class="fas fa-check-circle mx-2 linkhint"></i> <a
+                            href="https://www.niehs.nih.gov/" class="text-decoration-none"
+                            target="_blank"> National Institute of Environmental Health Sciences: NIEHS</a>
+                    </li>
+                    <li><i class="fas fa-check-circle mx-2 linkhint"></i> <a
+                            href="https://www.nepa.gov.af/service3dr" class="text-decoration-none"
+                            target="_blank">Afghanistan
+                            National Environmental Protection Agency</a>
+                    </li>
+                </ul>
+
+
+            </div>
+
+            <!-- Right Side: Images (Four images in a column) -->
+            <div class="col-md-4">
+                <div class="mb-3">
+                    <h4 class="text-start fw-bold">Humans are responsible for preserving nature and the green
+                        environment in their cities and countries.</h4>
+                    <img src="{% static 'ui/images/img/Green-environment.jpg' %}" alt="Air Pollution and Your Health" class="img-fluid">
+                </div>
+                <div class="mb-3">
+                    <h4 class="text-start fw-bold">Let's avoid activities and products that cause pollution.</h4>
+                    <img src="{% static 'ui/images/img/environment.jpg' %}" alt="Air Pollution and Your Health" class="img-fluid">
+                </div>
+                <div class="mb-3">
+                    <h4 class="text-start fw-bold">Keep the earth healthy.</h4>
+                    <img src="{% static 'ui/images/img/health_day.jpg' %}" alt="Air Pollution and Your Health" class="img-fluid">
+                </div>
+                <div class="mb-3">
+                    <h4 class="text-start fw-bold">Maintaining environmental care will bring you a healthy and fit family, so work to prevent pollution.</h4>
+                    <img src="{% static 'ui/images/img/family.webp' %}" alt="Air Pollution and Your Health" class="img-fluid border rounded-1">
+                </div>
+                <div class="mb-3">
+                    <h4 class="text-start fw-bold">Compounds of substances that cause pollution (chemical compounds)</h4>
+                    <img src="{% static 'ui/images/img/epa_pollution.jpg' %}" alt="Air Pollution and Your Health" class="img-fluid border rounded-1">
+                </div>
+                <div class="mb-3">
+                    <h4 class="text-start fw-bold">Let's join hands and provide a pollution-free environment for me with love.</h4>
+                    <img src="{% static 'ui/images/img/join.png' %}" alt="Air Pollution and Your Health" class="img-fluid border rounded-1">
+                </div>
+                <div class="mb-3">
+                    <h4 class="text-start fw-bold">Let's eliminate pollution so we can enjoy travel and entertainment to the fullest and create good memories together.</h4>
+                    <img src="{% static 'ui/images/img/travel.jpg' %}" alt="Air Pollution and Your Health" class="img-fluid border rounded-1">
+                </div>
+            </div>
+        </section>
+    </div>
+
+
+
+
+    <!-- Footer Section -->
+    <footer class=" bg-light text-dark py-5">
+        <div class="container">
+            <div class="row gy-4 border-bottom pb-4">
+                <div class="col-lg-4 col-md-12">
+                    <a class="navbar-brand d-flex justify-content-center" href="#">
+                        <img src="{% static 'ui/images/icon/air quality prediction.svg' %}" alt="Logo" width="160" height="160"
+                            style="margin-top: -20px; margin-bottom: -10px;">
+                    </a>
+                    <h4 class="fw-bold text-center mt-3">Air Quality Prediction</h4>
+                    <p class="text-center">
+                        We provide real-time air quality monitoring and personalized health insights to help you improve
+                        your surroundings and well-being.
+                    </p>
+                </div>
+
+                <div class="col-lg-4 col-md-12">
+                    <h5 class="fw-bold text-center">Useful Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Home</a>
+                        </li>
+                        <li><a href="#"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">About</a>
+                        </li>
+                        <li><a href="#"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Vision</a>
+                        </li>
+                        <li><a href="#" class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Air
+                                Levels</a></li>
+                        <li><a href="termandcondition.html"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Terms and
+                                Conditions</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-12">
+                    <h5 class="fw-bold text-center">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Graph
+                                Visualization</a></li>
+                        <li><a href="#"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Individual
+                                Prediction</a></li>
+                        <li><a href="#"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Organization
+                                Prediction</a></li>
+                        <li><a href="#"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Create
+                                Account</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Footter Second Part-->
+            <div class="row text-center mt-4 d-flex justify-content-between">
+                <!-- social Medai -->
+                <div class="col-lg-6 col-md-12 mb-3">
+                    <h5 class="fw-bold">Follow Us</h5>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="#" class="text-dark fs-4 sociamedia"><i class="fa-brands fa-facebook"
+                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="Facebook"></i></a>
+                        <a href="#" class="text-dark fs-4 sociamedia"><i class="fa-brands fa-instagram"
+                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="Instagram"></i>
+                            <a href="#" class="text-dark  sociamedia fs-4"><i class="fa-brands fa-github"
+                                    data-bs-toggle="tooltip" data-bs-placement="bottom" title="GitHub"></i></a>
+                            <a href="#" class="text-dark  sociamedia fs-4"><i class="fa-brands fa-kaggle"
+                                    data-bs-toggle="tooltip" data-bs-placement="bottom" title="Kaggle"></i></a>
+                    </div>
+                </div>
+
+
+                <!-- Subscribe -->
+                <div class="col-lg-4 col-md-12 mb-3">
+                    <h5 class="fw-bold text-start">Subscribe</h5>
+                    <form id="emailForm" novalidate>
+                        <div class="input-group justify-content-center">
+                            <input type="email" class="form-control w-50" id="emailInput" placeholder="Enter your email"
+                                pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+,-\.[a-zA-Z]{2,}$" required>
+                            <button class="btn btn-dark" type="submit">Subscribe</button>
+                            <div class="invalid-feedback text-center mt-2">Please enter a valid email address. This
+                                field cannot be empty.
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+
+
+
+    <!-- Popover and back to top -->
+    <script>
+        // Initialize all tooltips
+        document.addEventListener('DOMContentLoaded', function () {
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+        });
+
+        // Show/Hide Back to Top Button
+        const backToTop = document.getElementById("backToTop");
+
+        window.addEventListener("scroll", () => {
+            if (window.scrollY > 200) {
+                backToTop.style.display = "flex";
+            } else {
+                backToTop.style.display = "none";
+            }
+        });
+
+        // Scroll to Top on Click
+        backToTop.addEventListener("click", () => {
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth",
+            });
+        });
+    </script>
+
+    <footer class="text-white text-center py-3 footerpart">
+        <p>&copy; <span id="currentYear"></span> Air Quality Monitoring. All Rights Reserved.</p>
+    </footer>
+    
+    <script>
+        document.getElementById("currentYear").textContent = new Date().getFullYear();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script src="{% static 'ui/js/main.js' %}"></script>
+    <script src="{% static 'ui/js/potly.js' %}"></script>
+    <script src="{% static 'ui/js/bubbleMessenger.js' %}"></script>
+    <script src="{% static 'ui/js/contact.js' %}"></script>
+    <script src="{% static 'ui/js/subscribe.js' %}"></script>
+
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,171 @@
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+@keyframes backgroundAnimation {
+    0% {
+        background: linear-gradient(45deg, #200571, #ff9d00);
+    }
+
+    25% {
+        background: linear-gradient(45deg, #3f85f5, #f2a5b1);
+    }
+
+    50% {
+        background: linear-gradient(45deg, #A8E6A1, #c3524a);
+    }
+
+    75% {
+        background: linear-gradient(45deg, #737373, #76B852);
+    }
+
+    100% {
+        background: linear-gradient(45deg, #af23cf, #C4E8C1);
+    }
+}
+
+.bodyLogin {
+    animation: backgroundAnimation 20s infinite ease-in-out;
+    height: 100vh;
+    background-size: 400% 400%;
+    transition: background-color 2s ease-in-out;
+}
+.navbardars {
+    background: #538221 !important;
+}
+
+.btn-dark {
+    background: #538221 !important;
+    border: dashed 1px #ecebeb;
+}
+
+.countryReadmore {
+    background: #538221 !important;
+    border-radius: 3px;
+}
+
+.btn-primary {
+    background: #538221 !important;
+    border: none;
+    border-radius: 3px;
+}
+
+.bg-primary {
+    background: #538221 !important;
+}
+
+#sidebar {
+    transition: transform 0.3s ease-in-out;
+}
+
+#sidebar.hide {
+    transform: translateX(-100%);
+}
+
+.nav .nav-link:hover {
+    color: #538221;
+    font-weight: 600;
+    transition: all 0.3s ease-in-out;
+    transform: scale(1.02);
+}
+
+.modal-header {
+    background-color: #538221 !important;
+    color: #ffffff;
+}
+
+.nav-message:hover {
+    text-decoration: none;
+    background-color: #ecebeb;
+}
+
+.nav-message a {
+    cursor: pointer;
+    text-decoration: none;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.nav-message a:hover {
+    cursor: pointer;
+}
+
+th {
+    white-space: nowrap !important;
+}
+
+td {
+    white-space: nowrap !important;
+}
+
+.nav-message a img {
+    height: 35px;
+    width: 35px;
+    margin-left: 4px;
+}
+
+#profileMenu {
+    width: 48px;
+}
+
+#messageMenu {
+    margin-right: 10px;
+}
+
+main {
+    flex: 1;
+    margin-top: 56px;
+    /* height of header */
+}
+
+.accordion-button {
+    background-color: white !important;
+    color: black;
+    border: 1px solid #dee2e6;
+}
+
+.accordion-button:hover {
+    background-color: #538221 !important;
+    color: white !important;
+}
+
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #f8f9fa;
+}
+
+#refreshButton {
+    width: 50px;
+    height: 50px;
+    z-index: 1050;
+    border-radius: 50%;
+    left: 20px;
+    bottom: 20px;
+}
+
+/* Pagination */
+.navigation {
+    position: fixed;
+    bottom: 50px;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+.pagination {
+    justify-content: center;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+
+@media (max-width: 768px) {
+    #accountsDistribution {
+        max-width: 100%;
+        min-width: 100%;
+    }
+}

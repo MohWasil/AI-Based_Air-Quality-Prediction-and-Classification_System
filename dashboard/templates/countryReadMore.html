@@ -1,0 +1,62 @@
+<div class="modal fade" id="countryDetailsModal" tabindex="-1" aria-labelledby="countryDetailsModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="countryDetailsModalLabel">Country Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <!-- Country Name -->
+                    <div class="row text-center mb-4">
+                        <div class="col">
+                            <h2 id="countryName" class="fw-bold">Country Name</h2>
+                        </div>
+                    </div>
+
+                    <!-- Pollution Substances -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4 class="mb-3">Pollution Substances</h4>
+                            <div class="row">
+                                <!-- Repeat for each substance -->
+                                <div class="col-lg-4 col-md-6 mb-4">
+                                    <div class="card shadow-sm">
+                                        <div class="card-body text-center">
+                                            <i class="bi bi-cloud-fog h1 text-info"></i>
+                                            <h5 class="mt-2">CO</h5>
+                                            <p>Highest: <span class="text-danger fw-bold">45 µg/m³</span></p>
+                                            <p>Lowest: <span class="text-success fw-bold">10 µg/m³</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Repeat for other substances -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Air Quality Graph -->
+                    <div class="row my-5">
+                        <div class="col-md-12">
+                            <h4 class="mb-3">Air Quality Graph</h4>
+                            <canvas id="pollutionGraph"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Followers and Viewers Graph -->
+                    <div class="row my-5">
+                        <div class="col-md-12">
+                            <h4 class="mb-3">Followers and Viewers Distribution</h4>
+                            <canvas id="followersGraph"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
