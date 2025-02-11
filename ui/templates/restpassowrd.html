@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Quality Real Time Data Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Optional for Font Awesome Icons -->
+    <!-- Make sure you include Font Awesome CDN link -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+
+    <link rel="stylesheet" href="../static/css/style.css">
+</head>
+
+<body>
+
+
+    <div class="toast-container position-fixed bottom-0 start-50 translate-middle-x p-3 align-items-center">
+        <div id="individualCreateUser" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto text-white">Notification</strong>
+                <small class="text-white">Just now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                User created successfully!
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!-- 538221 -->
+    <header class="text-white text-center py-3">
+        <h1 class="text-center">Air Quality Prediction</h1>
+        <p class="text-center">Real-Time Air Quality Prediction and Classification System</p>
+    </header>
+    <!-- Navbar Section -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container bg-light">
+            <!-- Logo on the Left -->
+            <a class="navbar-brand" href="index.html">
+                <img src="air quality prediction.svg" alt="Logo" width="100" height="100"
+                    style="margin-top: -20px; margin-bottom: -10px;">
+            </a>
+
+            <!-- Centered Menu Items -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto text-center">
+                    <li class="nav-item">
+                        <a class="nav-link active fw-bold" aria-current="page" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold" href="#">Prediction</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold" href="#">Vision</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold" href="#">Levels</a>
+                    </li>
+                </ul>
+                <!-- Login Icon on the Right -->
+                <a href="loginair.html"
+                    class="navbar-login-icon d-flex justify-content-center ms-auto text-decoration-none loginpro"
+                    data-bs-toggle="tooltip" data-bs-placement="bottom" title="Login">
+                    <i class="fa-solid fa-right-to-bracket" style="font-size: 2rem;"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Reset Password Form -->
+    <div class="container d-flex justify-content-center align-items-center">
+        <div class="form-container">
+            <h2 class="text-center mb-4">Reset Password</h2>
+            <br>
+            <form id="resetPasswordForm" novalidate>
+                <div class="row g-3">
+                    <!-- Password -->
+                    <div class="col-md-12">
+                        <div class="form-floating">
+                            <input type="password" class="form-control" id="newpassword" placeholder="New Password"
+                                required>
+                            <label for="newpassword">New Password</label>
+                            <div id="missingCharsList"></div> <!-- نمایش کاراکترهای از دست رفته -->
+                            <ul id="passwordCriteria" class="list-unstyled">
+                                <li id="lowercase" class="text-danger">Lowercase letter (a-z)</li>
+                                <li id="uppercase" class="text-danger">Uppercase letter (A-Z)</li>
+                                <li id="number" class="text-danger">Number (0-9)</li>
+                                <li id="symbol" class="text-danger">Symbol (!@#$%^&*)</li>
+                                <li id="length" class="text-danger">At least 8 characters</li>
+                            </ul>
+
+                            <div class="error-text" id="errorPassword"></div> <!-- پیام خطای پسورد -->
+                        </div>
+                    </div>
+    
+                    <!-- Confirm Password -->
+                    <div class="col-md-12">
+                        <div class="form-floating">
+                            <input type="password" class="form-control" id="confirmNewPassword"
+                                placeholder="Confirm New Password" required>
+                            <label for="confirmNewPassword">Confirm New Password</label>
+                            <div class="error-text" id="errorConfirmPassword">Passwords must match.</div>
+                        </div>
+                    </div>
+                </div>
+    
+                <!-- Submit Button -->
+                <div class="d-flex justify-content-center mt-3">
+                    <button type="submit" id="submit" form="resetPasswordForm" class="btn btn-dark mt-3 col-md-6 col-12">Update Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Toast -->
+    <div class="toast-container position-fixed bottom-0 start-50 translate-middle-x p-3" id="toastContainer">
+        <div id="toastRestPassword" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header text-white">
+                <strong class="me-auto text-white">Password Updated</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Your password has been successfully updated.
+            </div>
+        </div>
+    </div>
+
+
+   
+
+
+
+
+
+    <!-- Footer Section -->
+    <footer class=" bg-light text-dark py-5">
+        <div class="container">
+            <!-- بخش بالایی: لوگو و لینک‌ها -->
+            <div class="row gy-4 border-bottom pb-4">
+                <!-- لوگو و توضیحات -->
+                <div class="col-lg-4 col-md-12">
+                    <a class="navbar-brand d-flex justify-content-center" href="#">
+                        <img src="air quality prediction.svg" alt="Logo" width="160" height="160"
+                            style="margin-top: -20px; margin-bottom: -10px;">
+                    </a>
+                    <h4 class="fw-bold text-center mt-3">Air Quality Prediction</h4>
+                    <p class="text-center">
+                        We provide real-time air quality monitoring and personalized health insights to help you improve
+                        your surroundings and well-being.
+                    </p>
+                </div>
+
+                <!-- لینک‌های مفید -->
+                <div class="col-lg-4 col-md-12">
+                    <h5 class="fw-bold text-center">Useful Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Home</a>
+                        </li>
+                        <li><a href="#"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">About</a>
+                        </li>
+                        <li><a href="#"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Vision</a>
+                        </li>
+                        <li><a href="#" class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Air
+                                Levels</a></li>
+                        <li><a href="#"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Terms and
+                                Conditions</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-12">
+                    <h5 class="fw-bold text-center">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Graph
+                                Visualization</a></li>
+                        <li><a href="#"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Individual
+                                Prediction</a></li>
+                        <li><a href="#"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Organization
+                                Prediction</a></li>
+                        <li><a href="#"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Create
+                                Account</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Footter Second Part-->
+            <div class="row text-center mt-4 d-flex justify-content-between">
+                <!-- social Medai -->
+                <div class="col-lg-6 col-md-12 mb-3">
+                    <h5 class="fw-bold">Follow Us</h5>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="#" class="text-dark fs-4 sociamedia"><i class="fa-brands fa-facebook"
+                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="Facebook"></i></a>
+                        <a href="#" class="text-dark fs-4 sociamedia"><i class="fa-brands fa-instagram"
+                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="Instagram"></i>
+                            <a href="#" class="text-dark  sociamedia fs-4"><i class="fa-brands fa-github"
+                                    data-bs-toggle="tooltip" data-bs-placement="bottom" title="GitHub"></i></a>
+                            <a href="#" class="text-dark  sociamedia fs-4"><i class="fa-brands fa-kaggle"
+                                    data-bs-toggle="tooltip" data-bs-placement="bottom" title="Kaggle"></i></a>
+                    </div>
+                </div>
+
+
+                <!-- Subscribe -->
+                <div class="col-lg-4 col-md-12 mb-3">
+                    <h5 class="fw-bold text-start">Subscribe</h5>
+                    <form>
+                        <div class="input-group justify-content-center">
+                            <input type="email" class="form-control w-50" placeholder="Enter your email" required>
+                            <button class="btn btn-dark" type="submit">Subscribe</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+
+
+
+
+    <script>
+        // Initialize all tooltips
+        document.addEventListener('DOMContentLoaded', function () {
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+        });
+    </script>
+
+    <footer class="text-white text-center py-3 footerpart">
+        <p>&copy; <span id="currentYear"></span> Air Quality Monitoring. All Rights Reserved.</p>
+    </footer>
+    
+    <script>
+        document.getElementById("currentYear").textContent = new Date().getFullYear();
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script src="../static/js/restpassword.js"></script>
+</body>
+
+</html>

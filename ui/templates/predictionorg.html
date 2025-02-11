@@ -1,0 +1,1818 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Quality Real Time Prediction</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Typed.js -->
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+    <!-- Make sure you include Font Awesome CDN link -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+
+    <link rel="stylesheet" href="{% static 'ui/css/style.css' %}">
+    <script src="https://cdn.plot.ly/plotly-2.26.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <!-- Include Leaflet.js --><!-- Include Leaflet 1.4.x -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Include Leaflet 1.4.x -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
+
+    <!-- Include Windy API library -->
+    <script src="https://api.windy.com/assets/libBoot.js"></script>
+
+</head>
+
+<body>
+
+    <!-- Messenger Bubble -->
+    <div id="messengerBubble" class="shadow" data-bs-toggle="tooltip" data-bs-placement="bottom"
+        title="Get Information!">
+        <i class="fa-solid fa-message"></i>
+    </div>
+    <!-- Chat Body -->
+    <div id="chatBox">
+        <div id="chatHeader">Messenger</div>
+        <!-- Accodion Only User Click Open it -->
+        <div class="accordion" id="accordionExample">
+            <!--The First Ithem -->
+            <div class="accordion- p-1 accordion-border">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                        Account Type For Air Prediction
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne"
+                    data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <div class="list-group">
+                            <button class="list-group-item list-group-item-action"
+                                onclick="showDescription('induviaccount')">Individual
+                                User</button>
+                            <button class="list-group-item list-group-item-action"
+                                onclick="showDescription('orgaccount')">Organization
+                                User</button>
+                        </div>
+
+                        <!-- Description section -->
+                        <div id="description" class="mt-1 text-center">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--The Seconde Ithem-->
+            <div class="accordion-item p-1 accordion-border">
+                <h2 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        Send Your Question?
+                    </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                    data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <form id="chatFooter" class="d-block needs-validation" novalidate>
+                            <!-- Name Field -->
+                            <div class="form-floating mb-1 col-md-12 col-12">
+                                <input type="text" class="form-control" id="bubblemessengerName" placeholder="Name"
+                                    required>
+                                <label for="bubblemessengerName">Name</label>
+                                <div class="invalid-feedback">Please enter your name.</div>
+                            </div>
+
+                            <!-- Phone Field -->
+                            <div class="form-floating mb-1 col-md-12 col-12">
+                                <input type="tel" class="form-control" id="bubblemessengerPhone" placeholder="Phone"
+                                    pattern="^\+?[0-9\s\-]{7,15}$" required>
+                                <label for="bubblemessengerPhone">Phone</label>
+                                <div class="invalid-feedback">Please enter a valid phone number (e.g., +931234567).
+                                </div>
+                            </div>
+
+                            <!-- Email Field -->
+                            <div class="form-floating mb-1 col-md-12 col-12">
+                                <input type="email" class="form-control" id="bubblemessengerEmail" placeholder="Email"
+                                    required>
+                                <label for="bubblemessengerEmail">Email</label>
+                                <div class="invalid-feedback">Please enter a valid email address.</div>
+                            </div>
+
+                            <!-- Question Field -->
+                            <div class="form-floating mb-1 col-md-12 col-12">
+                                <textarea class="form-control" id="bubblemessengerQuestion" placeholder="Question"
+                                    style="height: 100px;" required></textarea>
+                                <label for="bubblemessengerQuestion">Question</label>
+                                <div class="invalid-feedback">Please enter your question.</div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit"
+                                class="btn btn-primary mt-2 col-md-12 col-12 btn-chat-submit">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Accodion Only User Click Open it -->
+    </div>
+
+    <!-- Offcanvas for Profile Update Organization -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="organizationProfile" aria-labelledby="profileOffcanvasLabel"
+        data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="profileOffcanvasLabel">Update Profile</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body" style="max-height: 80vh; overflow-y: auto;">
+            <form id="updateProfileOrganization" novalidate>
+                <!-- Organization Name -->
+                <div class="mb-3 form-floating">
+                    <input type="text" class="form-control" id="organizationName" placeholder="Organization Name"
+                        pattern="^[a-zA-Z\s]+$" title="Only letters and spaces are allowed." required>
+                    <label for="organizationName">Organization Name</label>
+                    <div class="invalid-feedback">
+                        <i class="fas fa-exclamation-circle"></i> Please enter a valid organization name (letters and spaces
+                        only).
+                    </div>
+                </div>
+    
+                <!-- Responsible Person Name -->
+                <div class="mb-3 form-floating">
+                    <input type="text" class="form-control" id="organizationResponsible"
+                        placeholder="Responsible Person Name" pattern="^[a-zA-Z\s]+$"
+                        title="Only letters and spaces are allowed." required>
+                    <label for="organizationResponsible">Responsible Person Name</label>
+                    <div class="invalid-feedback">
+                        <i class="fas fa-exclamation-circle"></i> Please enter a valid responsible person name (letters and
+                        spaces only).
+                    </div>
+                </div>
+    
+                <!-- Phone Number -->
+                <div class="mb-3 form-floating">
+                    <input type="tel" class="form-control" id="organizationPhone" pattern="^\d{10,15}$"
+                        placeholder="Phone Number" title="Enter a valid phone number (10-15 digits)." required>
+                    <label for="organizationPhone">Phone Number</label>
+                    <div class="invalid-feedback">
+                        <i class="fas fa-exclamation-circle"></i> Please enter a valid phone number (10-15 digits).
+                    </div>
+                    <div class="form-text">Only numbers are allowed.</div>
+                </div>
+    
+                <!-- Official Email Address -->
+                <div class="mb-3 form-floating">
+                    <input type="email" class="form-control" id="organizationEmail" placeholder="Official Email Address"
+                        title="Please enter a valid email address." pattern="^[a-zA-Z0-9._%+-]+@(?!gmail\.com|yahoo\.com).*"
+                        required>
+                    <label for="organizationEmail">Official Email Address</label>
+                    <div class="invalid-feedback">
+                        <i class="fas fa-exclamation-circle"></i> Please enter a valid official email address.
+                    </div>
+                </div>
+    
+                <!-- Organization Address -->
+                <div class="mb-3 form-floating">
+                    <textarea class="form-control" id="organizationAddress" placeholder="Organization Address"
+                        style="height: 100px;" minlength="10" title="Please enter at least 10 characters."
+                        required></textarea>
+                    <label for="organizationAddress">Organization Address</label>
+                    <div class="invalid-feedback">
+                        <i class="fas fa-exclamation-circle"></i> Please enter the organization's address (at least 10
+                        characters).
+                    </div>
+                </div>
+    
+                <!-- Area of Activity -->
+                <div class="mb-3 form-floating">
+                    <input type="text" class="form-control" id="organizationActivity" placeholder="Area of Activity"
+                        pattern="^[a-zA-Z\s]+$" title="Only letters and spaces are allowed." required>
+                    <label for="organizationActivity">Area of Activity</label>
+                    <div class="invalid-feedback">
+                        <i class="fas fa-exclamation-circle"></i> Please enter a valid area of activity (letters and spaces
+                        only).
+                    </div>
+                </div>
+    
+                <!-- Country -->
+                <div class="mb-3 form-floating">
+                    <select class="form-select" id="organizationCountry" required>
+                        <option value="">Select your country</option>
+                        <option value="Afghanistan">Afghanistan</option>
+                        <option value="Albania">Albania</option>
+                        <option value="Algeria">Algeria</option>
+                        <!-- Add other countries as needed -->
+                    </select>
+                    <label for="organizationCountry">Country</label>
+                    <div class="invalid-feedback">
+                        <i class="fas fa-exclamation-circle"></i> Please select a country.
+                    </div>
+                </div>
+    
+                <!-- Change Passowrd -->
+                <div class="mb-3 form-check">
+                    <a href="#organizationProfilePasswordUpdate" class="text-decoration-none linkhint btn btn-outline-success rounded-1 col-md-12 col-12" data-bs-toggle="modal" data-bs-target="#organizationProfilePasswordUpdate" >Change Password</a>
+                </div>
+
+
+                <!-- Offline Alert Checkbox -->
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="offlineAlert">
+                    <label class="form-check-label" for="offlineAlert">Receive offline alerts for organization
+                        updates</label>
+                </div>
+
+                <!-- Alert For invalid Data entering -->
+                <div class="mb-3 form-check">
+                    <h3 id="orgprofileUpdateWarrning" class="text-warning"></h3>
+                    <p id="orgprofileUpdateExplain" class="text-start"></p>
+                </div>
+
+            </form>
+        </div>
+        <div class="offcanvas-footer p-3 border-top">
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-dark w-100" form="updateProfileOrganization">Save Changes</button>
+        </div>
+    </div>
+
+    <!-- Password Change Organization Profile Modal-->
+    <div class="modal fade" id="organizationProfilePasswordUpdate" tabindex="-1" aria-labelledby="passwordModalLabel"
+        aria-hidden="true" data-bs-backdrop="static" style="z-index: 999999;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="passwordModalLabel">Change Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="passwordForm">
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" id="oldPassword" placeholder="Old Password"
+                                required>
+                            <label for="oldPassword">Old Password</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control disabled-input" id="newPassword"
+                                placeholder="New Password" disabled required>
+                            <label for="newPassword">New Password</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control disabled-input" id="confirmPassword"
+                                placeholder="Confirm Password" disabled required>
+                            <label for="confirmPassword">Confirm Password</label>
+                        </div>
+
+                        <!-- alert for lenth and checking -->
+                        <small id="passwordStrengthMessage" class="form-text"></small>
+
+                        <div id="validationMessage" class="text-danger"></div>
+                        <button type="submit" class="btn btn-dark w-100" disabled id="submitButton">Submit</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <p class="text-start" id="orgProfilepassChangit"></p>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- Organization Profile Password Changing Toast orgprofilepasschangeit -->
+    <div id="orgprofilepasschangeit" aria-live="polite" aria-atomic="true"
+        class="toast fade position-fixed bottom-0 start-50 translate-middle-x" role="alert" style="z-index: 99999;">
+        <div class="toast-header bg-success text-white">
+            <strong class="me-auto">Success</strong>
+            <small>Just Now</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            Your profile password has been updated successfully.
+        </div>
+    </div>
+
+    
+
+    
+    <!-- Toast Update Profile Toast -->
+    <div id="toastContainer" aria-live="polite" aria-atomic="true"
+        class="position-fixed bottom-0 start-50 translate-middle-x p-3">
+        <div id="toastProfileUpdate" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-success text-white">
+                <strong class="me-auto">Success</strong>
+                <small>Just Now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Your profile has been updated successfully.
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Toast Container -->
+    <div id="toastProfileUpdate" aria-live="polite" aria-atomic="true"
+        class="position-fixed bottom-0 start-50 translate-middle-x p-3">
+        <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-success text-white">
+                <strong class="me-auto">Success</strong>
+                <small>Just Now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Your profile has been updated successfully.
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Back to Top Button -->
+    <div id="backToTop" class="d-flex">
+        <i class="fas fa-arrow-up" style="font-size: 1.5rem; color: rgb(255, 255, 255);"></i>
+    </div>
+
+
+    <!-- Modal Organization Idea -->
+    <div class="modal fade" id="organizationModal" tabindex="-1" aria-labelledby="organizationModalLabel" aria-hidden="true"
+        data-bs-backdrop="static" style="z-index: 99999;">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title" id="organizationModalLabel">Register Your Organization</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+    
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <p>
+                        Please provide the details of your organization. Your contributions will help us better collaborate
+                        to tackle environmental challenges.
+                    </p>
+                    <form id="orgIdeaForm" novalidate>
+                        <div class="row g-3">
+                            <!-- Organization Name -->
+                            <div class="col-md-6">
+                                <div class="form-floating position-relative">
+                                    <input type="Name" class="form-control" id="orgIdeaOrganizationName"
+                                        placeholder="Organization Name" pattern="^[a-zA-Z\s]+$''=-"
+                                        title="Only letters and spaces are allowed.">
+                                    <label for="orgIdeaOrganizationName">Organization Name</label>
+                                    <div class="invalid-feedback">Please enter the name of your organization (letters and
+                                        spaces only).</div>
+                                    <i
+                                        class="valid-feedback-icon bi bi-check-circle-fill text-success position-absolute end-0 top-50 translate-middle-y d-none"></i>
+                                </div>
+                            </div>
+    
+                            <!-- Responsible Person -->
+                            <div class="col-md-6">
+                                <div class="form-floating position-relative">
+                                    <input type="name" class="form-control" id="orgIdeaResponsiblePerson"
+                                        placeholder="Responsible Person" pattern="^[a-zA-Z\s]+$''=-"
+                                        title="Only letters and spaces are allowed.">
+                                    <label for="orgIdeaResponsiblePerson">Responsible Person</label>
+                                    <div class="invalid-feedback">Please enter the name of the responsible person (letters
+                                        and spaces only).</div>
+                                    <i
+                                        class="valid-feedback-icon bi bi-check-circle-fill text-success position-absolute end-0 top-50 translate-middle-y d-none"></i>
+                                </div>
+                            </div>
+    
+                            <!-- Official Email -->
+                            <div class="col-md-6">
+                                <div class="form-floating position-relative">
+                                    <input type="email" class="form-control" id="orgIdeaOfficialEmail"
+                                        placeholder="Official Email"
+                                        pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                                        title="Please enter a valid email address.">
+                                    <label for="orgIdeaOfficialEmail">Official Email</label>
+                                    <div class="invalid-feedback">Please enter a valid official email address.</div>
+                                    <i
+                                        class="valid-feedback-icon bi bi-check-circle-fill text-success position-absolute end-0 top-50 translate-middle-y d-none"></i>
+                                </div>
+                            </div>
+    
+                            <!-- Contact Number -->
+                            <div class="col-md-6">
+                                <div class="form-floating position-relative">
+                                    <input type="phone" class="form-control" id="orgIdeaContactNumber1"
+                                        placeholder="Primary Contact Number" pattern="^\d{10,15}$"
+                                        title="Only numbers (10-15 digits) are allowed.">
+                                    <label for="orgIdeaContactNumber1">Primary Contact Number</label>
+                                    <div class="invalid-feedback">Please enter a valid contact number (10-15 digits).</div>
+                                    <i
+                                        class="valid-feedback-icon bi bi-check-circle-fill text-success position-absolute end-0 top-50 translate-middle-y d-none"></i>
+                                </div>
+                            </div>
+    
+                            <!-- Alternate Contact Number -->
+                            <div class="col-md-6">
+                                <div class="form-floating position-relative">
+                                    <input type="phone" class="form-control" id="orgIdeaContactNumber2"
+                                        placeholder="Alternate Contact Number" pattern="^\d{10,15}$"
+                                        title="Only numbers (10-15 digits) are allowed.">
+                                    <label for="orgIdeaContactNumber2">Alternate Contact Number</label>
+                                    <div class="invalid-feedback">Please enter a valid alternate contact number (10-15
+                                        digits).</div>
+                                    <i
+                                        class="valid-feedback-icon bi bi-check-circle-fill text-success position-absolute end-0 top-50 translate-middle-y d-none"></i>
+                                </div>
+                            </div>
+    
+                            <!-- Area of Expertise -->
+                            <div class="col-md-6">
+                                <div class="form-floating position-relative">
+                                    <input type="text" class="form-control" id="orgIdeaExpertiseArea"
+                                        placeholder="Area of Expertise" pattern="^[a-zA-Z\s]+$"
+                                        title="Only letters and spaces are allowed.">
+                                    <label for="orgIdeaExpertiseArea">Area of Expertise</label>
+                                    <div class="invalid-feedback">Please enter the organization's area of expertise (letters
+                                        and spaces only).</div>
+                                    <i
+                                        class="valid-feedback-icon bi bi-check-circle-fill text-success position-absolute end-0 top-50 translate-middle-y d-none"></i>
+                                </div>
+                            </div>
+    
+                            <!-- Country -->
+                            <div class="col-md-12">
+                                <div class="form-floating position-relative">
+                                    <select class="form-select" id="orgIdeaCountry" aria-label="Country" required>
+                                        <option value="">Select your country</option>
+                                        <option value="Afghanistan">Afghanistan</option>
+                                        <option value="Albania">Albania</option>
+                                        <option value="Algeria">Algeria</option>
+                                        <option value="Andorra">Andorra</option>
+                                        <!-- Add more countries as needed -->
+                                    </select>
+                                    <label for="orgIdeaCountry">Country</label>
+                                    <div class="invalid-feedback">Please select a country.</div>
+                                    <i
+                                        class="valid-feedback-icon bi bi-check-circle-fill text-success position-absolute end-0 top-50 translate-middle-y d-none"></i>
+                                </div>
+                            </div>
+    
+                            <!-- Recommendation -->
+                            <div class="col-12">
+                                <div class="form-floating position-relative">
+                                    <textarea type="text" class="form-control" id="orgIdeaRecommendation"
+                                        placeholder="Your Recommendation" style="height: 150px;" minlength="10"
+                                        title="Please enter at least 10 characters."></textarea>
+                                    <label for="orgIdeaRecommendation">Your Recommendation</label>
+                                    <div class="invalid-feedback">Please share your recommendation (at least 10 characters).
+                                    </div>
+                                    <i
+                                        class="valid-feedback-icon bi bi-check-circle-fill text-success position-absolute end-0 top-50 translate-middle-y d-none"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+    
+                <!-- Fixed Submit Button -->
+                <div class="modal-footer">
+                    <div class="row text-start w-100">
+                        <h5 class="fw-bold text-warning" id="orgIdeaWarningTitle"></h5>
+                        <p class="text-start text-danger" id="orgIdeaWarningText"></p>
+                    </div>
+                    <button type="submit" form="orgIdeaForm" class="btn btn-dark w-100">Submit Organization
+                        Details</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!-- Organizatrion Toast Idea -->
+    <div class="position-fixed bottom-0 start-50 translate-middle-x p-3" style="z-index: 999999;">
+        <div id="organizationSuccessToast" class="toast align-items-center text-bg-light border border-success" role="alert"
+            aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-success text-white">
+                <strong class="me-auto">Success</strong>
+                <small>Just Now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="d-flex">
+                <div class="toast-body">
+                    <strong>Success!</strong> Your idea has been successfully submitted!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="text-white text-center py-3">
+        <h1 class="text-center">Air Quality Prediction</h1>
+        <p class="text-center">Real-Time Air Quality Prediction and Classification System</p>
+    </header>
+    <!-- Navbar Section -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light" id="home">
+        <div class="container bg-light">
+            <!-- Logo on the Left -->
+            <a class="navbar-brand" href="{% url 'index' %}">
+                <img src="{% static 'ui/images/icon/air quality prediction.svg' %}" alt="Logo" width="100" height="100"
+                    style="margin-top: -20px; margin-bottom: -10px;">
+            </a>
+
+            <!-- Centered Menu Items -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto text-center">
+                    <li class="nav-item">
+                        <a class="nav-link active fw-bold" aria-current="page" href="{% url 'index' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold" href="{% url 'index' %}#prediction">Prediction</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold" href="{% url 'index' %}#overvision">Vision</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold" href="{% url 'index'%}#levelair">Levels</a>
+                    </li>
+                </ul>
+                <!-- Login Icon on the Right -->
+                 {% if user.is_authenticated %}
+        
+                <!-- Profile -->
+                <div class="btn-group d-flex justify-content-center">
+                    <!-- Button to trigger the dropdown -->
+                    <a href="#"
+                       class="btn btn-secondary dropdown-toggle align-items-center"
+                       type="button"
+                       data-bs-toggle="dropdown"
+                       data-bs-boundary="viewport" aria-expanded="false" style="background-color: transparent; border: none;">
+                      <i class="fa-solid fa-circle-user" style="font-size: 2rem; color: #538221;"></i>
+                    </a>
+                  
+                    <!-- Dropdown Menu aligned to the end of the button -->
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <a class="dropdown-item" href="#profileOffcanvas"
+                           data-bs-toggle="offcanvas"
+                           data-bs-target="#profileOffcanvas"
+                           aria-controls="profileOffcanvas">
+                          <i class="fa-solid fa-cogs" style="margin-right: 10px;"></i>
+                          Account Settings
+                        </a>
+                      </li>
+                      <li>
+                        <a class="dropdown-item" href="/api/accounts/logout">
+                          <i class="fa-solid fa-sign-out-alt" style="margin-right: 10px;"></i>
+                          Log Out
+                        </a>
+                      </li>
+                    </ul>
+                  </div>                  
+                 {% else %}
+                 <a href="{% url 'login' %}"
+                    class="navbar-login-icon d-flex justify-content-center ms-auto text-decoration-none loginpro"
+                    data-bs-toggle="tooltip" data-bs-placement="bottom" title="Login">
+                    <i class="fa-solid fa-right-to-bracket" style="font-size: 2rem;"></i>
+                </a> 
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="predictionmore position-relative">
+
+        <div class="container my-4 position-relative" style="z-index: 99;">
+            <!-- Welcome message, country, and city -->
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="text-center mb-2 bg-light rounded-1 py-3 col-md-6 col-12">
+                    <h2 class="mb-4 text-center display-5 fw-bold bg-light" style="margin-top: 20px;">Air Quality
+                        Monitoring
+                    </h2>
+                    <h5 class="fs-5" id="location-info">Loading your location...</h5>
+                </div>
+            </div>
+
+
+            <!-- Special Prediction -->
+            <div class="row g-4">
+                <!-- Air Quality Cards -->
+                <div class="col-md-3 col-6 rounded-1">
+                    <div class="card text-center shadow-lg rounded-1">
+                        <div class="card-body">
+                            <i class="fas fa-smog display-4 text-warning"></i> <!-- Font Awesome icon for PM 2.5 -->
+                            <h5 class="card-title mt-3">PM 2.5</h5>
+                            <p class="card-text fs-5" id="PM2_5"> <span>μg/m³</span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 rounded-1">
+                    <div class="card text-center shadow-lg rounded-1">
+                        <div class="card-body">
+                            <i class="fas fa-cloud-sun display-4 text-primary"></i> <!-- Font Awesome icon for PM 10 -->
+                            <h5 class="card-title mt-3">PM 10</h5>
+                            <p class="card-text fs-5" id="PM10"> <span>μg/m³</span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 rounded-1">
+                    <div class="card text-center shadow-lg rounded-1">
+                        <div class="card-body">
+                            <i class="fas fa-tint display-4 text-info"></i> <!-- Font Awesome icon for NO₂ -->
+                            <h5 class="card-title mt-3">CO</h5>
+                            <p class="card-text fs-5" id="CO"> <span>ppb</span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 rounded-1">
+                    <div class="card text-center shadow-lg rounded-1">
+                        <div class="card-body rounded-1">
+                            <i class="fas fa-wind display-4 text-success"></i> <!-- Font Awesome icon for O₃ -->
+                            <h5 class="card-title mt-3">SO2</h5>
+                            <p class="card-text fs-5" id="SO2"> <span>ppb</span></p>                                                                                                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hour and daily -->
+            <div class="container py-4">
+                <!-- Hourly Forecast Section -->
+                <div class="row mb-4">
+                    <div class="col-12 bg-light rounded-1 table-responsive">
+                        <h5 style="margin-top: 20px;">Hourly forecast</h5>
+                        <p class="text-muted">In your City air quality index (AQI<sup>&#174;</sup>) forecast</p>
+                        <table class="table table-bordered  text-center table-responsive">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>1 Hour</th>
+                                    <th>3 Hour</th>
+                                    <th>6 Hour</th>
+                                    <th>24 Hour</th>
+                                    <th>48 Hour</th>
+                                    <th>72 Hour</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="badge bg-danger">160</span></td>
+                                    <td><span class="badge bg-danger">160</span></td>
+                                    <td><span class="badge bg-danger">160</span></td>
+                                    <td><span class="badge bg-danger">160</span></td>
+                                    <td><span class="badge bg-danger">160</span></td>
+                                    <td><span class="badge bg-danger">160</span></td>
+                                </tr>
+                                <tr>
+                                    <td><i class="bi bi-cloud"></i> 7&deg;</td>
+                                    <td><i class="bi bi-cloud"></i> 7&deg;</td>
+                                    <td><i class="bi bi-cloud"></i> 6&deg;</td>
+                                    <td><i class="bi bi-cloud"></i> 6&deg;</td>
+                                    <td><i class="bi bi-cloud"></i> 5&deg;</td>
+                                    <td><i class="bi bi-cloud"></i> 4&deg;</td>
+                                </tr>
+                                <tr>
+                                    <td>5.9 km/h</td>
+                                    <td>3.6 km/h</td>
+                                    <td>3.6 km/h</td>
+                                    <td>3.6 km/h</td>
+                                    <td>3.6 km/h</td>
+                                    <td>3.6 km/h</td>
+                                </tr>
+                                <tr>
+                                    <td>14%</td>
+                                    <td>15%</td>
+                                    <td>16%</td>
+                                    <td>18%</td>
+                                    <td>20%</td>
+                                    <td>22%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Daily and next day Forecast and Air Pollutants -->
+                <div class="row">
+                    <div class="col-md-6 col-12 mb-4">
+                        <div class="bg-light rounded p-3 shadow-sm h-100">
+                            <h4 class="text-start">Daily forecast</h4>
+                            <p class="text-start">Now  and Feature air quality index (AQI⁺) forecast</p>
+                            <div class="table-responsive">
+                                <table class="table table-bordered text-center mb-0" id="TableDayPullition">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Day</th>
+                                            <th>Pollution Name</th>
+                                            <th>Percentage</th>
+                                            <th>State</th>
+                                            <th>Hour</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Today</td>
+                                            <td class="bg-warning text-dark">PM2.5</td>
+                                            <td>4%</td>
+                                            <td></td>
+                                            <td>Good</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Next 24 Hour</td>
+                                            <td class="bg-success text-white">60</td>
+                                            <td>CO</td>
+                                            <td>30%</td>
+                                            <td>Abnormal</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Next 48, 72H</td>
+                                            <td class="bg-success text-white">63</td>
+                                            <td>PM10</td>
+                                            <td>Madrate</td>
+                                            <td>19%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% comment %}The must bad pullition today in your city {% endcomment %}
+                    <div class="col-md-6 col-12 mb-4">
+                        <div class="bg-light rounded p-3 shadow-sm h-100">
+                            <h4 class="text-start">Air pollutants</h4>
+                            <p class="mb-2 text-start">What is the current air quality in Kabul?</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <p id="mustPullitionName">PM2.5</p>
+                                <p class="text-danger fw-bold d-block" id="pullitonValue">68.7 µg/m³</p>
+                            </div>
+                            <div class="alert alert-danger mt-3">
+                                <strong id="pullitonNameDescriptor"></strong> concentration is currently <strong id="pullitonValueDescriptor">13.7 times</strong> the World Health
+                                Organization annual
+                                <strong id="pollutantDescriptorSecondName"></strong> guideline value.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="windy" class="windy"></div> <!-- Map background -->
+        <!-- CSS for the background -->
+        <style>
+            #windy {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 1;
+                pointer-events: none;
+                /* Disable all interactions visually */
+            }
+        </style>
+        <script>
+            const windyOptions = {
+                key: 'oaJ6HgyJyJQB0GxAJA1S0EEKaG4dpOd5', // Replace with your API key
+                lat: 50.4, // Latitude
+                lon: 14.3, // Longitude
+                zoom: 5, // Zoom level
+            };
+
+            // Initialize Windy
+            windyInit(windyOptions, (windyAPI) => {
+                const { map } = windyAPI; // Access the map object
+
+                // Optional: Disable scroll wheel zoom
+                map.scrollWheelZoom.disable();
+            });
+        </script>
+    </section>
+
+    <!-- Divider -->
+    <div class="container my-5">
+        <div class="d-flex align-items-center">
+            <hr class="flex-grow-1 border-2 border-success">
+            <span class="mx-3 text-uppercase text-muted fw-bold">Live Prediction and recommendations</span>
+            <hr class="flex-grow-1 border-2 border-success">
+        </div>
+    </div>
+
+    <!-- live pam and recommandation -->
+    <div class="container py-4">
+        <div class="row">
+            <!-- Left Section (Live Map) -->
+            <div class="col-lg-6 col-md-12 mb-3">
+                <div class="border rounded">
+                    <h5 class="mx-2 py-2 text-start">Live Air Pollution Map</h5>
+                    <!-- Map Container -->
+                    <div id="map" style="width: 100%; height: 400px;"></div>
+                </div>
+            </div>
+
+            <!-- Right Section (Recommendations for Organizations) -->
+            <div class="col-lg-6 col-md-12">
+                <div class="border rounded p-2">
+                    <h5 class="mb-2">Recommendations for Organizations</h5>
+                    <div class="list-group">
+                        <!-- Recommendation 1 -->
+                        <div class="list-group-item">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-industry text-primary fs-3 me-3"></i>
+                                <div>
+                                    <strong>Reduce Industrial Emissions</strong>
+                                    <p class="mb-0 text-muted small">Implement stricter controls and adopt clean technologies to
+                                        minimize emissions from factories.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Recommendation 2 -->
+                        <div class="list-group-item">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-tree text-success fs-3 me-3"></i>
+                                <div>
+                                    <strong>Promote Green Spaces</strong>
+                                    <p class="mb-0 text-muted small">Increase tree planting campaigns and maintain urban greenery to
+                                        combat pollution.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Recommendation 3 -->
+                        <div class="list-group-item">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-bus text-warning fs-3 me-3"></i>
+                                <div>
+                                    <strong>Encourage Public Transport</strong>
+                                    <p class="mb-0 text-muted small">Invest in efficient public transportation to reduce the number
+                                        of private vehicles on the roads.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Recommendation 4 -->
+                        <div class="list-group-item">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-recycle text-info fs-3 me-3"></i>
+                                <div>
+                                    <strong>Enhance Waste Management</strong>
+                                    <p class="mb-0 text-muted small">Develop proper waste management systems to prevent the burning
+                                        of garbage, a major source of air pollution.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <div class="row">
+                        <h6 class="text-start mx-1" style="margin-top: 10px;">
+                            What's your recommendation?
+                        </h6>
+                        <p class="text-start mx-2" style="font-size: 14px;">If you have ideas or strategies to reduce air pollution
+                            and improve environmental quality, share them with us.</p>
+            
+                        <a href="" class="text-decoration-none btn btn-dark col-md-6 col-10 mx-3" data-bs-toggle="modal"
+                            data-bs-target="#organizationModal">Send Your Recommendation</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- Divider -->
+    <div class="container my-5">
+        <div class="d-flex align-items-center">
+            <hr class="flex-grow-1 border-2 border-success">
+            <span class="mx-3 text-uppercase text-muted fw-bold">Table of Popular Countries</span>
+            <hr class="flex-grow-1 border-2 border-success">
+        </div>
+    </div>
+
+    <!-- table of Popular Countries -->
+    <br>
+    <section class="air-quality-table">
+        <div class="container my-2">
+            <h5 class="mb-4 text-center display-5 fw-bold">Countries with the Highest Air Pollution</h5>
+            <div class="col-12 text-md-center text-start mx-auto" style="max-width: 900px;">
+                <p class="fs-5">
+                    Here we have listed the countries with the worst pollution in the world. These countries have been
+                    significantly polluted by all organizations, so we have provided them separately to users.
+                </p>
+                <br>
+            </div>
+
+
+            <!-- ranking of the Countries -->
+            <div class="modal fade" id="pollutionModal" tabindex="-1" aria-labelledby="pollutionModalLabel" aria-hidden="true" data-bs-backdrop="static">
+                <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="pollutionModalLabel">Ranking Countries Based on Highest Pollution</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <table class="table table-bordered table-striped text-center">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th class="col-md-1 text-center fw-bold">Number</th>
+                                        <th class="col-md-2 text-center">Country and Flag</th>
+                                        <th>PM 2.5</th>
+                                        <th>PM 10</th>
+                                        <th>NO₂</th>
+                                        <th>O₃</th>
+                                        <th>SO₂</th>
+                                        <th>Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Example Rows for Various Countries -->
+                                    <tr>
+                                        <td class="fw-bold">1</td>
+                                        <td class="text-start fw-bold"><img
+                                                src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Flag_of_the_United_States.svg"
+                                                alt="USA Flag" width="30"> USA</td>
+                                        <td>55 μg/m³</td>
+                                        <td>75 μg/m³</td>
+                                        <td>15 ppb</td>
+                                        <td>30 ppb</td>
+                                        <td>10 ppb</td>
+                                        <td><a class="btn btn-info" href="countrydetails.html">Details</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">2</td>
+                                        <td class="text-start fw-bold"><img
+                                                src="https://upload.wikimedia.org/wikipedia/commons/4/41/Flag_of_India.svg" alt="India Flag"
+                                                width="30"> India</td>
+                                        <td>95 μg/m³</td>
+                                        <td>100 μg/m³</td>
+                                        <td>25 ppb</td>
+                                        <td>50 ppb</td>
+                                        <td>20 ppb</td>
+                                        <td><a class="btn btn-info" href="countrydetails.html">Details</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">3</td>
+                                        <td class="text-start fw-bold"><img
+                                                src="https://upload.wikimedia.org/wikipedia/commons/3/32/Flag_of_Pakistan.svg" alt="Pakistan Flag"
+                                                width="30"> Pakistan</td>
+                                        <td>70 μg/m³</td>
+                                        <td>85 μg/m³</td>
+                                        <td>18 ppb</td>
+                                        <td>35 ppb</td>
+                                        <td>12 ppb</td>
+                                        <td><a class="btn btn-info" href="countrydetails.html">Details</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">4</td>
+                                        <td class="text-start fw-bold"><img
+                                                src="https://upload.wikimedia.org/wikipedia/commons/f/f9/Flag_of_Bangladesh.svg"
+                                                alt="Bangladesh Flag" width="30"> Bangladesh</td>
+                                        <td>85 μg/m³</td>
+                                        <td>90 μg/m³</td>
+                                        <td>22 ppb</td>
+                                        <td>45 ppb</td>
+                                        <td>17 ppb</td>
+                                        <td><a class="btn btn-info" href="countrydetails.html">Details</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">5</td>
+                                        <td class="text-start fw-bold"><img
+                                                src="https://upload.wikimedia.org/wikipedia/commons/c/ca/Flag_of_Iran.svg" alt="Iran Flag"
+                                                width="30"> Iran</td>
+                                        <td>65 μg/m³</td>
+                                        <td>70 μg/m³</td>
+                                        <td>19 ppb</td>
+                                        <td>40 ppb</td>
+                                        <td>13 ppb</td>
+                                        <td><a class="btn btn-info" href="countrydetails.html">Details</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">6</td>
+                                        <td class="text-start fw-bold"><img
+                                                src="https://upload.wikimedia.org/wikipedia/commons/c/c4/Flag_of_China.svg" alt="China Flag"
+                                                width="30"> China</td>
+                                        <td>100 μg/m³</td>
+                                        <td>120 μg/m³</td>
+                                        <td>30 ppb</td>
+                                        <td>60 ppb</td>
+                                        <td>25 ppb</td>
+                                        <td><a class="btn btn-info" href="countrydetails.html">Details</a></td>
+                                    </tr>
+                            
+                                    <tr>
+                                        <td class="fw-bold">7</td>
+                                        <td class="text-start fw-bold"><img
+                                                src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Flag_of_the_United_Kingdom.svg"
+                                                alt="UK Flag" width="30"> United Kingdom</td>
+                                        <td>40 μg/m³</td>
+                                        <td>50 μg/m³</td>
+                                        <td>10 ppb</td>
+                                        <td>20 ppb</td>
+                                        <td>5 ppb</td>
+                                        <td><a class="btn btn-info" href="countrydetails.html">Details</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">8</td>
+                                        <td class="text-start fw-bold"><img
+                                                src="https://upload.wikimedia.org/wikipedia/commons/5/55/Flag_of_Germany.svg" alt="Germany Flag"
+                                                width="30"> Germany</td>
+                                        <td>50 μg/m³</td>
+                                        <td>60 μg/m³</td>
+                                        <td>12 ppb</td>
+                                        <td>25 ppb</td>
+                                        <td>8 ppb</td>
+                                        <td><a class="btn btn-info" href="countrydetails.html">Details</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">9</td>
+                                        <td class="text-start fw-bold"><img
+                                                src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Flag_of_Canada.svg" alt="Canada Flag"
+                                                width="30"> Canada</td>
+                                        <td>30 μg/m³</td>
+                                        <td>40 μg/m³</td>
+                                        <td>8 ppb</td>
+                                        <td>18 ppb</td>
+                                        <td>4 ppb</td>
+                                        <td><a class="btn btn-info" href="countrydetails.html">Details</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">10</td>
+                                        <td class="text-start fw-bold"><img
+                                                src="https://upload.wikimedia.org/wikipedia/commons/4/41/Flag_of_Japan.svg" alt="Japan Flag"
+                                                width="30"> Japan</td>
+                                        <td>60 μg/m³</td>
+                                        <td>70 μg/m³</td>
+                                        <td>15 ppb</td>
+                                        <td>30 ppb</td>
+                                        <td>10 ppb</td>
+                                        <td><a class="btn btn-info" href="countrydetails.html">Details</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">11</td>
+                                        <td class="text-start fw-bold"><img
+                                                src="https://upload.wikimedia.org/wikipedia/commons/0/0f/Flag_of_France.svg" alt="France Flag"
+                                                width="30"> France</td>
+                                        <td>45 μg/m³</td>
+                                        <td>55 μg/m³</td>
+                                        <td>11 ppb</td>
+                                        <td>22 ppb</td>
+                                        <td>7 ppb</td>
+                                        <td><a class="btn btn-info" href="countrydetails.html">Details</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">12</td>
+                                        <td class="text-start fw-bold"><img
+                                                src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_Australia.svg" alt="Australia Flag"
+                                                width="30"> Australia</td>
+                                        <td>35 μg/m³</td>
+                                        <td>45 μg/m³</td>
+                                        <td>9 ppb</td>
+                                        <td>20 ppb</td>
+                                        <td>6 ppb</td>
+                                        <td><a class="btn btn-info" href="countrydetails.html">Details</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">13</td>
+                                        <td class="text-start fw-bold"><img
+                                                src="https://upload.wikimedia.org/wikipedia/commons/1/1e/Flag_of_South_Korea.svg"
+                                                alt="South Korea Flag" width="30"> South Korea</td>
+                                        <td>80 μg/m³</td>
+                                        <td>90 μg/m³</td>
+                                        <td>18 ppb</td>
+                                        <td>38 ppb</td>
+                                        <td>12 ppb</td>
+                                        <td><a class="btn btn-info" href="countrydetails.html">Details</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">14</td>
+                                        <td class="text-start fw-bold"><img
+                                                src="https://upload.wikimedia.org/wikipedia/commons/7/7a/Flag_of_Italy.svg" alt="Italy Flag"
+                                                width="30"> Italy</td>
+                                        <td>50 μg/m³</td>
+                                        <td>60 μg/m³</td>
+                                        <td>13 ppb</td>
+                                        <td>26 ppb</td>
+                                        <td>9 ppb</td>
+                                        <td><a class="btn btn-info" href="countrydetails.html">Details</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">15</td>
+                                        <td class="text-start fw-bold"><img
+                                                src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Flag_of_Sweden.svg" alt="Sweden Flag"
+                                                width="30"> Sweden</td>
+                                        <td>25 μg/m³</td>
+                                        <td>35 μg/m³</td>
+                                        <td>7 ppb</td>
+                                        <td>17 ppb</td>
+                                        <td>3 ppb</td>
+                                        <td><a class="btn btn-info" href="countrydetails.html">Details</a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table starts here -->
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="col-md-2 text-center">Country and Flag</th>
+                            <th>PM 2.5</th>
+                            <th>PM 10</th>
+                            <th>NO₂</th>
+                            <th>O₃</th>
+                            <th>SO₂</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-start fw-bold flex-wrop"><img
+                                    src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Flag_of_the_United_States.svg"
+                                    alt="USA Flag" width="30"> USA</td>
+                            <td>55 μg/m³</td>
+                            <td>75 μg/m³</td>
+                            <td>15 ppb</td>
+                            <td>30 ppb</td>
+                            <td>10 ppb</td>
+                            <td><a class="btn btn-info" href="countrydetails.html">Details</a></td>
+                        </tr>
+                        <tr>
+                            <td class="text-start fw-bold"><img src="{% static 'ui/images/Flag/Afghanistan.png' %}" alt="Afghanistan Flag"
+                                    width="30"> Afghanistan</td>
+                            <td>60 μg/m³</td>
+                            <td>80 μg/m³</td>
+                            <td>20 ppb</td>
+                            <td>40 ppb</td>
+                            <td>15 ppb</td>
+                            <td><button class="btn btn-info">Details</button></td>
+                        </tr>
+                        <tr>
+                            <td class="text-start fw-bold"><img
+                                    src="https://upload.wikimedia.org/wikipedia/commons/4/41/Flag_of_India.svg"
+                                    alt="India Flag" width="30"> India</td>
+                            <td>95 μg/m³</td>
+                            <td>100 μg/m³</td>
+                            <td>25 ppb</td>
+                            <td>50 ppb</td>
+                            <td>20 ppb</td>
+                            <td><button class="btn btn-info">Details</button></td>
+                        </tr>
+                        <tr>
+                            <td class="text-start fw-bold"><img
+                                    src="https://upload.wikimedia.org/wikipedia/commons/3/32/Flag_of_Pakistan.svg"
+                                    alt="Pakistan Flag" width="30"> Pakistan</td>
+                            <td>70 μg/m³</td>
+                            <td>85 μg/m³</td>
+                            <td>18 ppb</td>
+                            <td>35 ppb</td>
+                            <td>12 ppb</td>
+                            <td><button class="btn btn-info">Details</button></td>
+                        </tr>
+                        <tr>
+                            <td class="text-start fw-bold"><img
+                                    src="https://upload.wikimedia.org/wikipedia/commons/f/f9/Flag_of_Bangladesh.svg"
+                                    alt="Bangladesh Flag" width="30"> Bangladesh</td>
+                            <td>85 μg/m³</td>
+                            <td>90 μg/m³</td>
+                            <td>22 ppb</td>
+                            <td>45 ppb</td>
+                            <td>17 ppb</td>
+                            <td><button class="btn btn-info">Details</button></td>
+                        </tr>
+                        <tr>
+                            <td class="text-start fw-bold"><img
+                                    src="https://upload.wikimedia.org/wikipedia/commons/c/ca/Flag_of_Iran.svg"
+                                    alt="Iran Flag" width="30"> Iran</td>
+                            <td>65 μg/m³</td>
+                            <td>70 μg/m³</td>
+                            <td>19 ppb</td>
+                            <td>40 ppb</td>
+                            <td>13 ppb</td>
+                            <td><button class="btn btn-info">Details</button></td>
+                        </tr>
+                        <tr>
+                            <td class="text-start fw-bold"><img src="{% static 'ui/images/Flag/China.png' %}" alt="China Flag" width="30"> China
+                            </td>
+                            <td>100 μg/m³</td>
+                            <td>120 μg/m³</td>
+                            <td>30 ppb</td>
+                            <td>60 ppb</td>
+                            <td>25 ppb</td>
+                            <td><button class="btn btn-info">Details</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <a href="" class="text-decoration-none fw-bold linkhint border-0 bg-none" data-bs-toggle="modal" data-bs-target="#pollutionModal">See All Countries ranking in Air pollution</a>
+            </div>
+        </div>
+
+        <section class="air-pollution-reasons my-5">
+            <div class="container">
+                <h4 class="mb-4 text-start display-7 fw-bold">Why These Countries Lead in Air Pollution?</h4>
+                <p class="fs-6">
+                    The countries with the highest levels of air pollution, including the USA, Afghanistan, India,
+                    Pakistan,
+                    Bangladesh, Iran, and China, face significant challenges due to various factors. Rapid
+                    industrialization
+                    without proper environmental regulations, heavy reliance on fossil fuels, deforestation due to
+                    urbanization,
+                    inefficient waste management, and limited public awareness are major contributors. However, these
+                    nations
+                    can reduce pollution by implementing stricter industrial regulations, promoting renewable energy,
+                    expanding
+                    public transport, restoring green spaces through afforestation campaigns, and educating citizens on
+                    sustainable practices. Addressing these issues requires coordinated efforts from governments,
+                    industries,
+                    and communities to ensure cleaner and healthier environments.<a href="https://epi.yale.edu/" class="text-decoration-none fw-bold linkhint" target="_blank"> Read More</a> about the Ten of the most polluted countries in the world. Report from the State of Global Air.
+                    <a href="https://www.stateofglobalair.org/sites/default/files/documents/2024-06/soga-2024-report_0.pdf" class="text-decoration-none fw-bold linkhint" target="_blank" download="soga-2024-report_0.pdf">Download</a>
+                </p>
+            </div>
+        </section>
+
+    </section>
+
+
+    <!-- Divider -->
+    <div class="container my-5">
+        <div class="d-flex align-items-center">
+            <hr class="flex-grow-1 border-2 border-success">
+            <span class="mx-3 text-uppercase text-muted fw-bold">Air Quality Monitoring Graph</span>
+            <hr class="flex-grow-1 border-2 border-success">
+        </div>
+    </div>
+
+    <!-- Air Quality Section -->
+    <div class="container my-5">
+        <h2 class="mb-4 text-center display-5 fw-bold">Air Quality Monitoring and Visualization Prediction</h2>
+
+        <!-- Tabs for Graph and Prediction -->
+        <div class="mt-5">
+            <ul class="nav nav-tabs fw-bold linkhint" id="airQualityTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="graph-tab" data-bs-toggle="tab" data-bs-target="#graphTab"
+                        type="button" role="tab" aria-controls="graphTabContent" aria-selected="true">
+                        <i class="fas fa-chart-line fa-lg me-2" style="font-size: 2rem;"></i> Graph
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="prediction-tab" data-bs-toggle="tab" data-bs-target="#predictionTabContent"
+                        type="button" role="tab" aria-controls="predictionTabContent" aria-selected="false">
+                        <i class="fas fa-cogs fa-lg me-2" style="font-size: 2rem;"></i> Prediction
+                    </button>
+                </li>
+            </ul>
+            <!-- tap -->
+            <div class="tab-content mt-1" id="airQualityTabsContent">
+                <div class="tab-pane fade tab-pane fade show active col-md-12 col-12" id="graphTab" role="tabpanel" aria-labelledby="prediction-tab">
+                    <!-- Graph Tab -->
+                    <div class="container">
+                        <div class="row mt-5">
+                            <!-- GPH Per Capital -->
+                                <br><br>
+                                <!-- Custom Range Air Quality Prediction -->
+                                <h3 class="display-7 text-center fw-bold mt-5">
+                                    Custom Range Air Quality Prediction
+                                </h3>
+                                <div class="chart-container" style="overflow-x: auto; white-space: nowrap;">
+                                    <div id="timeSerise" style="height: 600px; min-width: 600px;"></div>
+                                </div>
+                    
+                                <br><br>
+                                <!-- Custom Range Air Quality Prediction -->
+                                <h3 class="display-7 text-center fw-bold mt-5">
+                                    Custom Range Air Quality Prediction
+                                </h3>
+                                <div class="chart-container" style="overflow-x: auto; white-space: nowrap;">
+                                    <div id="plotlyGraph" style="height: 600px; min-width: 600px;"></div>
+                                </div>
+                                <span class="mt-5"></span>
+                                
+                                <!-- Prediction Advice -->
+                             <h4 class="text-ceter fw-bold">Recommendation for Your Organization:</h4>
+                             
+                             <style>
+                                #gptTextAdvice::after {
+                                    content: "|";  /* Add a pipe character after the text */
+                                    animation: blink 0.8s infinite;
+                                }
+                                @keyframes blink {
+                                    50% { opacity: 0; }
+                                }
+                            </style>
+                             <div id="" class="col-md-12 col-12 text-dark" style="font-size: 1.1rem; font-weight: 600; height: 100%px;">
+                                <p id="gptTextAdvice"></p>
+                             </div>
+                             <br><br>
+
+                             <!-- Divider -->
+                            <div class="container my-5">
+                                <div class="d-flex align-items-center">
+                                    <hr class="flex-grow-1 border-2 border-success">
+                                    <span class="mx-3 text-uppercase text-muted fw-bold">Pollution Data Table</span>
+                                    <hr class="flex-grow-1 border-2 border-success">
+                                </div>
+                            </div>
+                             
+                                {% comment %} Divider {% endcomment %}
+                                <!-- Pollution Data Table -->
+                                <div class="container mt-5">
+                                    <h3 class="text-center mb-4">Pollution Data Table</h3>
+                                
+                                    <!-- Accordion Wrapper -->
+                                    <div class="accordion" id="pollutionAccordion">
+                                        <!-- Accordion Item -->
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="headingOne">
+                                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                                    <h5 class="fw-bold">View Pollution Data</h5>
+                                                </button>
+                                            </h2>
+                                            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#pollutionAccordion">
+                                                <div class="accordion-body">
+                                                    <!-- Table inside Accordion -->
+                                                    <table class="table table-bordered table-striped bg-success text-white">
+                                                        <thead class="text-center">
+                                                            <tr>
+                                                                <th>#</th>
+                                                                <th>Time</th>
+                                                                <th>Status</th>
+                                                                <th>Pollutant</th>
+                                                                <th>Pollution Level (%)</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="pollutionTableBody" class="text-center">
+                                                            <!-- Table rows will be populated here -->
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Divider -->
+                                <div class="container my-5">
+                                    <div class="d-flex align-items-center">
+                                        <hr class="flex-grow-1 border-2 border-success">
+                                        <span class="mx-3 text-uppercase text-muted fw-bold">Policies and Responsibilities</span>
+                                        <hr class="flex-grow-1 border-2 border-success">
+                                    </div>
+                                </div>
+                                <!-- Air Quality Responsiablity -->
+                                <section class="air-pollution-policy my-5">
+                                    <div class="container">
+                                        <!-- Title -->
+                                        <h2 class="mb-4 text-center display-5 fw-bold">Air Pollution Policies and Responsibilities</h2>
+                                        <p class="fs-5">
+                                            Here at our platform, we aim to empower you with essential knowledge about air pollution policies and
+                                            individual
+                                            responsibilities.
+                                            Understanding the impact of pollutants and the measures to mitigate them is vital for creating a
+                                            healthier
+                                            environment.
+                                            Dive deeper into our detailed sections to explore global regulations, harmful substances, and actionable
+                                            steps you
+                                            can take to reduce pollution.
+                                            By learning more, you contribute to a cleaner, sustainable future—start your journey today and make a
+                                            difference!
+                                        </p>
+                                
+                                        <!-- Policies and harmful substances -->
+                                        <div class="mb-5">
+                                            <h3 class="mb-3 fw-bold">1- Policies and Harmful Substances</h3>
+                                            <ul class="list-group">
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check-circle text-success me-2"></i>
+                                                    Implementing strict industrial emission controls to reduce harmful gases like NO₂, SO₂, and CO₂.
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check-circle text-success me-2"></i>
+                                                    Promoting renewable energy sources like solar, wind, and hydro to minimize fossil fuel
+                                                    dependency.
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check-circle text-success me-2"></i>
+                                                    Introducing sustainable transportation systems such as electric vehicles and improved public
+                                                    transit.
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check-circle text-success me-2"></i>
+                                                    Encouraging afforestation and protecting existing forests to enhance air purification.
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check-circle text-success me-2"></i>
+                                                    Regulating waste management systems to avoid open burning, which releases toxic pollutants.
+                                                </li>
+                                            </ul>
+                                        </div>
+                                
+                                        <!-- Impact of Air Pollution -->
+                                        <div class="mb-5">
+                                            <h3 class="mb-3 fw-bold">2- Impact of Air Pollution</h3>
+                                            <ul class="list-group">
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-exclamation-circle text-danger me-2"></i>
+                                                    Increases respiratory illnesses like asthma and bronchitis.
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-exclamation-circle text-danger me-2"></i>
+                                                    Causes cardiovascular diseases and reduces life expectancy.
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-exclamation-circle text-danger me-2"></i>
+                                                    Impacts child development and increases the risk of birth defects.
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-exclamation-circle text-danger me-2"></i>
+                                                    Harms ecosystems by damaging crops, forests, and water bodies.
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-exclamation-circle text-danger me-2"></i>
+                                                    Contributes to climate change by increasing greenhouse gases.
+                                                </li>
+                                            </ul>
+                                        </div>
+                                
+                                        <!-- Organizational and Government Responsibilities -->
+                                        <div>
+                                            <h3 class="mb-3 fw-bold">3- Organizational and Government Responsibilities</h3>
+                                            <ul class="list-group">
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check-circle text-success me-2"></i>
+                                                    Promote the use of public transportation, carpooling, and cycling through incentives and
+                                                    infrastructure
+                                                    development.
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check-circle text-success me-2"></i>
+                                                    Enforce regulations to prevent open burning of waste and implement effective waste management
+                                                    systems.
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check-circle text-success me-2"></i>
+                                                    Fund and support large-scale tree planting and afforestation projects to combat deforestation.
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check-circle text-success me-2"></i>
+                                                    Encourage energy efficiency in industries and businesses through policies, incentives, and
+                                                    regulations.
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check-circle text-success me-2"></i>
+                                                    Implement nationwide education campaigns to raise awareness about air pollution and promote
+                                                    sustainable
+                                                    practices.
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check-circle text-success me-2"></i>
+                                                    Develop and enforce air quality standards to limit pollutants such as PM2.5, NO₂, and SO₂ in urban
+                                                    areas.
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check-circle text-success me-2"></i>
+                                                    Promote green technologies and renewable energy sources like solar and wind power in industries and
+                                                    households.
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check-circle text-success me-2"></i>
+                                                    Encourage the adoption of cleaner industrial practices and technologies to reduce harmful emissions.
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check-circle text-success me-2"></i>
+                                                    Implement air quality monitoring systems to track pollution levels and respond to high-risk
+                                                    situations.
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check-circle text-success me-2"></i>
+                                                    Strengthen international collaboration on air quality issues, particularly in transboundary
+                                                    pollution areas.
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check-circle text-success me-2"></i>
+                                                    Encourage businesses to adopt Corporate Social Responsibility (CSR) strategies focused on reducing
+                                                    their
+                                                    environmental impact.
+                                                </li>
+                                            </ul>
+                                
+                                            <!-- Source Attribution -->
+                                            <p class="mt-3 text-muted"><small>Source: World Health Organization (WHO), United Nations Environment
+                                                    Programme
+                                                    (UNEP), and Clean Air Initiative for Asian Cities (CAI-Asia).</small></p>
+                                        </div>
+                                
+                                    </div>
+                                </section>
+                        </div>
+                    </div>
+                </div>
+                  
+                <!-- Prediction Tab -->
+                <div class="tab-pane fade" id="predictionTabContent" role="tabpane2" aria-labelledby="prediction-tab">
+                    <div class="container">
+                        <div class="row">
+                            <!-- graph part -->
+                            <h3 class="text-center mt-4 fw-bold">Prediction Graph</h3>
+                            <div class="col-md-12 col-12 preditionGraph" style="overflow-x: auto; white-space: nowrap;">
+                                <div class="container">
+                                    <div class="row justify-content-center">
+                                      <div class="col-lg-8 col-auto mx-auto">
+                                        <div id="multiTraceChart" class="text-center"></div>
+                                      </div>
+                                    </div>
+                                  </div>                                  
+                            </div>
+
+                            <!-- Divider -->
+                            <div class="container my-5">
+                                <div class="d-flex align-items-center">
+                                    <hr class="flex-grow-1 border-2 border-success">
+                                    <span class="mx-3 text-uppercase text-muted fw-bold">Policy for the organization based on the graph above</span>
+                                    <hr class="flex-grow-1 border-2 border-success">
+                                </div>
+                            </div>
+                            <!-- Placies part -->
+                             <div class="col-md-12 col-12">
+                                <h2 class="text-start mb-4">Proposed Rules for Air Pollution Management</h2>
+                                <p class="text-start">Below are three categories of rules to address air pollution: organizational actions,
+                                    recommendations, and risks associated with pollution.</p>
+                                
+                                <!-- Actions Section -->
+                                <div class="card mb-4">
+                                    <div class="card-header d-flex align-items-center">
+                                        <i class="fas fa-cogs text-success me-2 fs-3"></i>
+                                        <h5 class="m-0">Organizational Actions</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="list-group">
+                                            <li class="list-group-item d-flex align-items-center">
+                                                <i class="fas fa-tools text-success me-2"></i>
+                                                Install air quality monitoring devices in key locations
+                                            </li>
+                                            <li class="list-group-item d-flex align-items-center">
+                                                <i class="fas fa-chart-line text-success me-2"></i>
+                                                Form specialized teams to analyze pollution data
+                                            </li>
+                                            <li class="list-group-item d-flex align-items-center">
+                                                <i class="fas fa-industry text-success me-2"></i>
+                                                Increase inspections of polluting industries
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <!-- Recommendations Section -->
+                                <div class="card mb-4">
+                                    <div class="card-header d-flex align-items-center">
+                                        <i class="fas fa-lightbulb text-info me-2"></i>
+                                        <h5 class="m-0">Recommendations for the Organization</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="list-group">
+                                            <li class="list-group-item d-flex align-items-center">
+                                                <i class="fas fa-bullhorn text-info me-2"></i>
+                                                Raise public awareness about pollution levels
+                                            </li>
+                                            <li class="list-group-item d-flex align-items-center">
+                                                <i class="fas fa-bus-alt text-info me-2"></i>
+                                                Encourage the use of public transportation
+                                            </li>
+                                            <li class="list-group-item d-flex align-items-center">
+                                                <i class="fas fa-solar-panel text-info me-2"></i>
+                                                Provide subsidies for renewable energy adoption
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <!-- Risks Section -->
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                                        <h5 class="m-0">Pollution Risks</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="list-group">
+                                            <li class="list-group-item d-flex align-items-center">
+                                                <i class="fas fa-lungs text-danger me-2"></i>
+                                                Increased risk of respiratory and cardiovascular diseases
+                                            </li>
+                                            <li class="list-group-item d-flex align-items-center">
+                                                <i class="fas fa-child text-danger me-2"></i>
+                                                Negative impact on children's development
+                                            </li>
+                                            <li class="list-group-item d-flex align-items-center">
+                                                <i class="fas fa-car-crash text-danger me-2"></i>
+                                                Reduced visibility and higher risk of road accidents
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- Divider -->
+    <div class="container my-5">
+        <div class="d-flex align-items-center">
+            <hr class="flex-grow-1 border-2 border-success">
+            <span class="mx-3 text-uppercase text-muted fw-bold">Resource</span>
+            <hr class="flex-grow-1 border-2 border-success">
+        </div>
+    </div>
+
+    <!-- Reliable Resources on Air Pollution -->
+    <section class="my-5">
+        <div class="container">
+            <h2 class="text-center fw-bold display-5 mb-4">Reliable Resources on Air Pollution</h2>
+            <div class="list-group">
+                <!-- Resource 1 -->
+                <div class="list-group-item d-flex align-items-start">
+                    <i class="bi bi-check-circle-fill text-success me-3 fs-4"></i>
+                    <div>
+                        <h5 class="fw-bold">World Health Organization (WHO)</h5>
+                        <p>WHO provides air quality guidelines, including standards for PM2.5 and PM10 pollutants.</p>
+                        <a href="https://www.who.int/teams/environment-climate-change-and-health/air-quality-and-health"
+                            target="_blank" class="text-decoration-none linkhint">Click here for more information</a>
+                    </div>
+                </div>
+                <!-- Resource 2 -->
+                <div class="list-group-item d-flex align-items-start">
+                    <i class="bi bi-check-circle-fill text-success me-3 fs-4"></i>
+                    <div>
+                        <h5 class="fw-bold">United Nations Environment Programme (UNEP)</h5>
+                        <p>UNEP emphasizes global actions to reduce air pollution and mitigate climate change effects.
+                        </p>
+                        <a href="https://www.unep.org/explore-topics/air" target="_blank"
+                            class="text-decoration-none linkhint">Click
+                            here for more information</a>
+                    </div>
+                </div>
+                <!-- Resource 3 -->
+                <div class="list-group-item d-flex align-items-start">
+                    <i class="bi bi-check-circle-fill text-success me-3 fs-4"></i>
+                    <div>
+                        <h5 class="fw-bold">Intergovernmental Panel on Climate Change (IPCC)</h5>
+                        <p>IPCC publishes reports on the impact of air pollution on climate change.</p>
+                        <a href="https://www.ipcc.ch/" target="_blank" class="text-decoration-none linkhint">Click here
+                            for more
+                            information</a>
+                    </div>
+                </div>
+                <!-- Resource 4 -->
+                <div class="list-group-item d-flex align-items-start">
+                    <i class="bi bi-check-circle-fill text-success me-3 fs-4"></i>
+                    <div>
+                        <h5 class="fw-bold">United States Environmental Protection Agency (EPA)</h5>
+                        <p>EPA sets air quality standards for major pollutants such as NO₂ and SO₂.</p>
+                        <a href="https://www.epa.gov/criteria-air-pollutants" target="_blank"
+                            class="text-decoration-none linkhint">Click here for more information</a>
+                    </div>
+                </div>
+                <!-- Resource 5 -->
+                <div class="list-group-item d-flex align-items-start">
+                    <i class="bi bi-check-circle-fill text-success me-3 fs-4"></i>
+                    <div>
+                        <h5 class="fw-bold">European Environment Agency (EEA)</h5>
+                        <p>EEA provides comprehensive data and analysis on air pollution in Europe.</p>
+                        <a href="https://www.eea.europa.eu/themes/air" target="_blank"
+                            class="text-decoration-none linkhint">Click
+                            here for more information</a>
+                    </div>
+                </div>
+                <!-- Resource 6 -->
+                <div class="list-group-item d-flex align-items-start">
+                    <i class="bi bi-check-circle-fill text-success me-3 fs-4"></i>
+                    <div>
+                        <h5 class="fw-bold">Clean Air Asia</h5>
+                        <p>This organization focuses on reducing air pollution in Asia and provides guidance to
+                            policymakers.</p>
+                        <a href="https://cleanairasia.org/" target="_blank" class="text-decoration-none linkhint">Click
+                            here for
+                            more
+                            information</a>
+                    </div>
+                </div>
+                <!-- Resource 7 -->
+                <div class="list-group-item d-flex align-items-start">
+                    <i class="bi bi-check-circle-fill text-success me-3 fs-4"></i>
+                    <div>
+                        <h5 class="fw-bold">International Energy Agency (IEA)</h5>
+                        <p>IEA explains the impact of clean energy usage on reducing air pollution.</p>
+                        <a href="https://www.iea.org/topics/air-pollution" target="_blank"
+                            class="text-decoration-none linkhint">Click here for more information</a>
+                    </div>
+                </div>
+                <!-- Resource 8 -->
+                <div class="list-group-item d-flex align-items-start">
+                    <i class="bi bi-check-circle-fill text-success me-3 fs-4"></i>
+                    <div>
+                        <h5 class="fw-bold">Global Burden of Disease (GBD) Studies</h5>
+                        <p>This study examines the effects of air pollution on health and mortality rates.</p>
+                        <a href="https://www.healthdata.org/gbd" target="_blank"
+                            class="text-decoration-none linkhint">Click here
+                            for
+                            more information</a>
+                    </div>
+                </div>
+                <!-- Resource 9 -->
+                <div class="list-group-item d-flex align-items-start">
+                    <i class="bi bi-check-circle-fill text-success me-3 fs-4"></i>
+                    <div>
+                        <h5 class="fw-bold">Greenpeace International</h5>
+                        <p>Greenpeace raises awareness about air pollution and suggests ways to mitigate it.</p>
+                        <a href="https://www.greenpeace.org/" target="_blank"
+                            class="text-decoration-none linkhint">Click here
+                            for
+                            more information</a>
+                    </div>
+                </div>
+                <!-- Resource 10 -->
+                <div class="list-group-item d-flex align-items-start">
+                    <i class="bi bi-check-circle-fill text-success me-3 fs-4"></i>
+                    <div>
+                        <h5 class="fw-bold">International Institute for Environment and Development (IIED)</h5>
+                        <p>IIED researches the links between air pollution, climate change, and sustainable development.
+                        </p>
+                        <a href="https://www.iied.org/" target="_blank" class="text-decoration-none linkhint">Click here
+                            for more
+                            information</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    
+    <footer class="text-white text-center py-3 footerpart">
+        <p>&copy; <span id="currentYear"></span> Air Quality Monitoring. All Rights Reserved.</p>
+    </footer>
+    
+    <script>
+        document.getElementById("currentYear").textContent = new Date().getFullYear();
+    </script>
+    
+
+
+    <!-- Tooltip Poppover -->
+    <script>
+        // Initialize all tooltips
+        document.addEventListener('DOMContentLoaded', function () {
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+        });
+
+        // Show/Hide Back to Top Button
+        const backToTop = document.getElementById("backToTop");
+
+        window.addEventListener("scroll", () => {
+            if (window.scrollY > 200) {
+                backToTop.style.display = "flex";
+            } else {
+                backToTop.style.display = "none";
+            }
+        });
+
+        // Scroll to Top on Click
+        backToTop.addEventListener("click", () => {
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth",
+            });
+        });
+    </script>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'ui/js/location.js' %}"></script>
+    <script src="{% static 'ui/js/profileinduvisialUpdate.js' %}"></script>
+    <script src="{% static 'ui/js/bubbleMessenger.js' %}"></script>
+    <script src="{% static 'ui/js/livemaprediction.js' %}"></script>
+    <script src="{% static 'ui/js/subscribe.js' %}"></script>
+    <script src="{% static 'ui/js/organizationidea.js' %}"></script>
+    <script src="{% static 'ui/js/timeSeris.js' %}"></script>
+    <script src="{% static 'ui/js/butttonChart.js' %}"></script>
+    <script src="{% static 'ui/js/prodectionPullation.js' %}"></script>
+    <script src="{% static 'ui/js/orgranizationProfileUpdate.js' %}"></script>
+    <script src="{% static 'ui/js/orgprofilePassworchange.js' %}"></script>
+</body>
+
+</html>

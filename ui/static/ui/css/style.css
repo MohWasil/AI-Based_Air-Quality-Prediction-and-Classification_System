@@ -1,0 +1,934 @@
+/* Change scrollbar width and colors */
+body::-webkit-scrollbar {
+    width: 10px;
+    background-color: none !important;
+    overflow: hidden;
+}
+
+body::-webkit-scrollbar-thumb {
+    background-color: #538221;
+    border-radius: 5px;
+    border: 2px solid #ffffff;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+    background-color: #538221;
+}
+
+.scrollable-content::-webkit-scrollbar {
+    display: none !important;
+}
+
+/* Offcanvas Body */
+.offcanvas-body::-webkit-scrollbar {
+    width: 5px;
+}
+
+.btn-outline-success:hover {
+    background-color: #538221 !important;
+}
+
+.btn-outline-success {
+    border: 1px solid #538221;
+    border-radius: 2px !important;
+}
+
+/* Air Quality rang */
+.badge-tab {
+    position: absolute;
+    top: -55px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #538221;
+    color: white;
+    width: 110px;
+    height: 110px;
+    font-size: 3rem;
+    font-weight: bold;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    z-index: 10;
+    border: solid 6px rgba(230, 230, 230, 0.087);
+    box-shadow: 0 4px 30px rgb(255, 255, 255);
+}
+.badge-tabyallow {
+    position: absolute;
+    top: -55px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ffcc00;
+    color: rgb(52, 52, 52);
+    width: 110px;
+    height: 110px;
+    font-size: 3rem;
+    font-weight: bold;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    z-index: 10;
+    border: solid 6px rgba(98, 98, 98, 0.219);
+    box-shadow: 0 4px 30px rgb(255, 255, 255);
+}
+.badge-taborange {
+    position: absolute;
+    top: -55px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ff8000;
+    color: rgb(52, 52, 52);
+    width: 110px;
+    height: 110px;
+    font-size: 3rem;
+    font-weight: bold;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    z-index: 10;
+    border: solid 6px rgba(98, 98, 98, 0.219);
+    box-shadow: 0 4px 30px rgb(255, 255, 255);
+}
+.badge-tabred {
+    position: absolute;
+    top: -55px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #bf2e02;
+    color: rgb(255, 255, 255);
+    width: 110px;
+    height: 110px;
+    font-size: 2.9rem;
+    font-weight: bold;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    z-index: 10;
+    border: solid 6px rgba(98, 98, 98, 0.219);
+    box-shadow: 0 4px 30px rgb(255, 255, 255);
+}
+.badge-tabpurple {
+    position: absolute;
+    top: -55px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: Purple;
+    color: rgb(255, 255, 255);
+    width: 110px;
+    height: 110px;
+    font-size: 2.9rem;
+    font-weight: bold;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    z-index: 10;
+    border: solid 6px rgba(180, 180, 180, 0.35);
+    box-shadow: 0 4px 30px rgb(255, 255, 255);
+}
+.badge-tabdark {
+    position: absolute;
+    top: -55px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: Maroon;
+    color: rgb(255, 255, 255);
+    width: 110px;
+    height: 110px;
+    font-size: 2.9rem;
+    font-weight: bold;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    z-index: 10;
+    border: solid 6px rgba(167, 167, 167, 0.399);
+    box-shadow: 0 4px 30px rgb(255, 255, 255);
+}
+
+.aircardrang {
+    margin-top: 80px;
+    position: relative;
+    overflow: visible;
+}
+
+/*F&Q */
+.accordion-button {
+    background-color: white !important;
+    color: black;
+    border: 1px solid #dee2e6;
+}
+
+.accordion-button:hover {
+    background-color: #538221 !important;
+    color: white !important;
+}
+
+/* Styling the draggable messenger bubble */
+#messengerBubble {
+    position: fixed;
+    bottom: 270px;
+    left: 20px;
+    width: 60px;
+    height: 60px;
+    background-color: #538221;
+    border: solid 2px #f8f9fa;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10000;
+}
+
+/* Styling the chat box */
+#chatBox {
+    position: fixed;
+    display: none;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 300px;
+    max-width: calc(100vw - 40px);
+    max-height: 100%;
+    z-index: 9999;
+    margin-top: -4px;
+    overflow-y: auto;
+}
+
+#chatHeader {
+    background-color: #538221;
+    color: white;
+    padding: 10px;
+    font-weight: bold;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.btn-chat-submit {
+    background-color: #538221;
+    border: #538221 solid 1px;
+}
+
+.btn-chat-submit:hover {
+    background-color: #538221;
+    border: #538221 solid 1px;
+}
+
+#chatContent {
+    max-height: 100%;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.fa-message {
+    font-size: 1.6rem;
+}
+
+#chatFooter {
+    display: flex;
+    padding: 2px;
+}
+
+.typing {
+    border-right: 2px solid #000;
+    animation: blink 0.7s steps(1) infinite;
+    display: inline-block;
+}
+
+@keyframes blink {
+    50% {
+        border-color: transparent;
+    }
+}
+
+.accordion-border {
+    border: solid 1px #538221;
+}
+
+.order-btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.order-btn:hover {
+    background-color: #0056b3;
+}
+
+.accordion-body {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0;
+    padding-right: 0;
+    max-height: 330px;
+    overflow-y: auto;
+    overflow-x: hidden
+}
+
+.accordion-body::-webkit-scrollbar {
+    width: 3px;
+}
+
+.accordion-body::-webkit-scrollbar-thumb {
+    background-color: #538221;
+    border-radius: 4px;
+}
+
+.accordion-body::-webkit-scrollbar-thumb:hover {
+    background-color: #538221;
+}
+
+.accordion-body::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
+}
+
+.list-group-item {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+#description {
+    font-size: 0.8rem;
+    height: auto;
+    overflow-y: auto;
+}
+
+.accordion-button {
+    font-size: 0.9rem;
+}
+/* source item */
+.source-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.source-item i {
+    margin-right: 10px;
+}
+/* term and Condition */
+.important {
+    font-weight: bold;
+}
+
+/* End Bubble Messenger */
+.offcanvas-body::-webkit-scrollbar-track {
+    background: #f5f5f556;
+}
+
+.offcanvas-body::-webkit-scrollbar-thumb {
+    background: #538221;
+    border-radius: 10px;
+}
+
+.offcanvas-body::-webkit-scrollbar-thumb:hover {
+    background: #538221;
+}
+
+header {
+    background-color: #538221;
+}
+
+.navbar-collapse .navbar-nav .nav-item .nav-link:hover {
+    color: #538221 !important;
+    transition: all ease-in-out 6s;
+}
+
+.loginpro i {
+    color: #272727;
+}
+
+.loginpro i:hover {
+    color: #538221 !important;
+    transition: all ease-in-out 6s;
+}
+
+.btnprofile {
+    border: none;
+    background-color: #0077ff00 !important;
+}
+
+.header-page {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 70vh;
+}
+
+/* toast */
+#toastContainer {
+    z-index: 1000;
+}
+
+.toast-header {
+    background-color: #538221 !important;
+}
+
+.toast-header .btn-close {
+    background-color: #ffffff !important;
+}
+
+/* Hero Section */
+.hero {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: #343a40;
+}
+
+/* Hero Section */
+.predictionmore {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: #343a40;
+    position: relative;
+    z-index: 2;
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.144);
+    z-index: 1;
+}
+
+.hero .container {
+    position: relative;
+    z-index: 2;
+}
+
+/* Why Box */
+.why-box {
+    background: #538221;
+    color: #fff;
+    border-radius: 0px;
+    padding: 30px;
+    box-shadow: 0 4px 150px rgba(255, 255, 255, 0.805);
+    transition: transform 0.3s ease-in-out;
+    border: dashed 1px #ffffff9a;
+}
+
+.why-box:hover {
+    transform: translateY(-5px);
+    cursor: pointer;
+}
+
+/* Icon Box */
+.icon-box {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: all 0.3s ease-in-out;
+}
+
+.icon-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.icon-box i {
+    font-size: 2rem;
+    color: #0078ff;
+    margin-bottom: 10px;
+}
+
+/* Call-to-Action Section */
+.cta-section h2 {
+    font-size: 2.5rem;
+    color: #0078ff;
+    font-weight: bold;
+}
+
+.cta-section p {
+    font-size: 1rem;
+    color: #6c757d;
+}
+
+.cta-section button {
+    color: #0078ff;
+    border: 2px solid #0078ff;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.cta-section button:hover {
+    background: #0078ff;
+    color: #fff;
+}
+
+.hero-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    color: white;
+    text-align: center;
+    background: url('main.png') no-repeat center center;
+    background-size: cover;
+    height: 60vh;
+}
+
+.card {
+    border-radius: 0;
+}
+
+.main-card {
+    background-color: #538221;
+}
+
+.borderSingl {
+    border: dashed 1px #538221 !important;
+    border-radius: 0px !important;
+    box-shadow: 0 4px 150px rgba(69, 69, 69, 0.7);
+}
+
+.borderSingl:hover {
+    transform: translateY(-5px);
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+.fas {
+    color: #538221
+}
+
+.btn-dark {
+    background-color: #538221 !important;
+    border: none !important;
+}
+
+.btn-info {
+    background-color: #538221 !important;
+    border: none !important;
+    color: #ffffff;
+}
+
+.btn-info:hover {
+    background-color: #69933c !important;
+    border: none !important;
+    color: #f5f5f5;
+}
+
+.borderpair {
+    border: dashed 1px #b8b8b8 !important;
+}
+
+.card {
+    border: none;
+}
+
+.card:hover {
+    cursor: pointer;
+    background-color: #eef7e5;
+    transition: all ease-in-out;
+}
+
+.air-quality-section {
+    background-color: #f8f9fa48;
+    padding: 2rem;
+    border-radius: 10px;
+}
+
+.air-quality-card {
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn {
+    border-radius: 0px !important;
+}
+
+.img-card {
+    width: 93%;
+    height: 84%;
+    border-radius: 7px !important;
+}
+
+.team-card {
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    height: 100%;
+}
+
+.team-card img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 15px;
+}
+
+.social-icons a {
+    margin: 0 10px;
+    color: inherit;
+    text-decoration: none;
+    font-size: 3rem;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    margin-top: 30px;
+}
+
+.carousel-control-prev .fa-angles-right,
+.fa-angles-right {
+    font-size: 16px !important;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: #ddd;
+    border-radius: 50%;
+}
+
+.carousel-inner {
+    margin-bottom: 50px;
+}
+
+.btn {
+    border-radius: 0px;
+}
+
+.space {
+    display: none;
+}
+
+/* Contact */
+.btn-sbmit {
+    background-color: #538221;
+    border: none;
+}
+
+.btn-outline-dark:hover {
+    background-color: #538221;
+    border: solid #538221 1px;
+}
+
+.btn-sbmit:hover {
+    background-color: #5c8a2a;
+    border: none;
+}
+
+.footerpart {
+    background-color: #5c8a2a;
+    border: none;
+    height: 50px;
+}
+
+
+.footerlinks:hover {
+    color: #538221 !important;
+    transition: transform 0.6s ease-in-out;
+    cursor: pointer;
+}
+
+.sociamedia:hover {
+    color: #538221 !important;
+    transition: transform 0.6s ease-in-out;
+    cursor: pointer;
+}
+
+input {
+    border: solid 1px #538221 !important;
+    border-radius: 2px !important;
+}
+
+textarea {
+    border: solid 1px #538221 !important;
+    border-radius: 2px !important;
+}
+
+select {
+    border: solid 1px #538221 !important;
+    border-radius: 2px !important;
+}
+
+.form-container {
+    max-width: 700px;
+    margin: 50px auto;
+    padding: 30px;
+    background: #fff;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.is-invalid {
+    border-color: red;
+}
+
+.error-text {
+    color: red;
+    font-size: 0.9rem;
+    display: none;
+}
+
+#backToTop {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #538221;
+    color: rgb(255, 255, 255) !important;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    border: solid 1px white;
+}
+
+#backToTop:hover {
+    background-color: #6a9141;
+    cursor: pointer;
+}
+
+/* Login */
+.login {
+    margin-bottom: 30px;
+    font-weight: bold;
+}
+
+/* Across The Public org */
+.organization-card {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 10px;
+    overflow: hidden;
+}
+
+.organization-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #ebfce6;
+    border: solid 1px #dcf7d4;
+    border-radius: 2px;
+}
+
+.organization-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    text-align: center;
+    padding: 5px;
+    font-size: 12px;
+    transform: translateY(100%);
+    transition: transform 0.3s ease-in-out;
+}
+
+.organization-card:hover .organization-overlay {
+    transform: translateY(0);
+}
+
+.organization-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+}
+
+/* Start: Custom Scrollbar Styling */
+
+.modal-body {
+    overflow-y: auto;
+}
+
+.modal-body::-webkit-scrollbar {
+    width: 5px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: #538221;
+    border-radius: 1px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: #538221;
+}
+
+.linkhint {
+    color: #538221;
+}
+
+#ideaModal {
+    z-index: 999999;
+}
+
+.air-quality-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 15px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    background-color: #f9f9f9;
+}
+
+.text-section {
+    flex: 1;
+}
+
+.image-section {
+    flex: 0 0 40%;
+    text-align: center;
+}
+
+.image-section img {
+    max-width: 90%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.text-highlight {
+    background-color: rgb(245, 108, 87);
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 15px;
+}
+
+/* Air Pulition type */
+.source-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.source-item i {
+    margin-right: 10px;
+}
+
+.afghanistanmap {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 600px;
+}
+
+/* Graph */
+#plotlyChartData {
+    height: 700px;
+}
+
+/* Prediction */
+#multiTraceChart {
+    margin: 0 auto !important;
+    padding: 0 !important;
+}
+
+.tab-pane {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* End: Custom Scrollbar Styling */
+@media (max-width: 768px) {
+    .welcome {
+        margin-top: 60px;
+    }
+
+    .space {
+        display: block;
+        height: 60px !important;
+    }
+
+    .hero-section .col-12 {
+        margin-bottom: 20px;
+    }
+
+    .team-card {
+        margin: 0 auto;
+    }
+
+    .carousel-control-prev,
+    .carousel-control-next {
+        margin-top: 20px;
+    }
+
+    .footerpart p {
+        font-size: 12px;
+    }
+
+    .afghanistanmap {
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 300px;
+    }
+
+    .imgvision {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    #plotlyChartData {
+        height: 300px;
+        width: 300px;
+    }
+}
+
+.navbar {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.navbar-login-icon {
+    cursor: pointer;
+}
+
+@media (max-width: 992px) {
+    .navbar-login-icon {
+        display: none;
+    }
+}

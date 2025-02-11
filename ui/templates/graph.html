@@ -1,0 +1,177 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!-- Right Side: Description -->
+    <div id="myDiv" style="width: 100%; height: 500px;">
+        <p id="features_importance"></p>
+    </div>
+     <script>
+        fetch('api/predict/predict/')
+            .then(response => response.json())
+            .then(data => {
+                let predicRes = data.predic_res;
+                let features_importance = data.features_importance;
+                document.getElementById('features_importance').innerHTML = features_importance;
+
+                // استخراج داده‌ها برای پیش‌بینی آلاینده‌ها
+                let times = ["1H", "3H", "6H", "24H", "48H", "72H"];
+                let predictions = times.map(time => {
+                    let found = predicRes.find(item => item[0] === time);
+                    return found ? found[1] : null;
+                });
+
+                // داده‌های آلاینده‌ها مشابه کد اولی
+                const pollutants = ["PM2.5", "CO2", "NO2", "SO2", "O3", "PM10"];
+                const pollutionData = pollutants.map((pollutant, index) => {
+                    const values = predictions;
+                    const yValues = [50, ...values];  // فرض مقدار اولیه 50 برای شروع
+                    const xValues = ["Start", ...times];
+
+                    return {
+                        name: pollutant,
+                        x: xValues,
+                        y: yValues,
+                        type: 'scatter',
+                        mode: 'lines+markers',  // برای نمایش همزمان خطوط و دایره‌ها
+                        line: {
+                            color: `rgb(${(index * 40)}, ${(index + 1) * 40}, 200)`, // رنگ‌های مختلف برای هر آلاینده
+                            width: 2,
+                        },
+                        marker: {
+                            size: 10,
+                            color: `rgb(${(index * 40)}, ${(index + 1) * 40}, 200)`, // رنگ دایره‌ها با توجه به آلاینده
+                            symbol: 'circle',
+                        },
+                        text: yValues.map((value, index) => {
+                            const date = new Date();
+                            date.setHours(date.getHours() + (parseInt(times[index]) / 1)); // تنظیم تاریخ
+                            const timeInfo = index > 0 ? { time: times[index - 1], date: date.toLocaleString() } : { time: "Start", date: "" };
+                            return `Pollutant: ${pollutant}<br>Time: ${timeInfo.time}<br>Date: ${timeInfo.date}<br>Value: ${value} μg/m³`;
+                        }),
+                        hoverinfo: 'text',
+                    };
+                });
+
+                // فریم‌ها برای انیمیشن
+                const frames = times.map((time, index) => {
+                    return {
+                        name: time,
+                        data: pollutionData.map((pollutant) => {
+                            return {
+                                x: pollutant.x.slice(0, index + 2),
+                                y: pollutant.y.slice(0, index + 2),
+                                type: 'scatter',
+                                mode: 'lines+markers',
+                                name: pollutant.name,
+                                line: {
+                                    color: pollutant.line.color,
+                                    width: 2,
+                                },
+                                marker: {
+                                    size: 10,
+                                    color: pollutant.marker.color,
+                                    symbol: 'circle',
+                                },
+                            };
+                        }),
+                    };
+                });
+
+                // مراحل اسلایدر برای کنترل انیمیشن
+                const sliderSteps = times.map((time) => {
+                    return {
+                        method: 'animate',
+                        label: time,
+                        args: [
+                            [time],
+                            {
+                                mode: 'immediate',
+                                transition: { duration: 600 },
+                                frame: { duration: 600, redraw: false },
+                            },
+                        ],
+                    };
+                });
+
+                // تنظیمات گراف
+                const layout = {
+                    title: 'Air Quality Predictions Over Time',
+                    xaxis: {
+                        title: 'Time',
+                        tickvals: times,
+                    },
+                    yaxis: { title: 'Prediction (μg/m³)' },
+                    showlegend: true,
+                    hovermode: 'closest',
+                    updatemenus: [
+                        {
+                            x: 0.5,
+                            y: -0.15,
+                            xanchor: 'center',
+                            yanchor: 'top',
+                            showactive: false,
+                            type: 'buttons',
+                            direction: 'left',
+                            buttons: [
+                                {
+                                    method: 'animate',
+                                    args: [
+                                        null,
+                                        {
+                                            mode: 'immediate',
+                                            fromcurrent: true,
+                                            transition: { duration: 600 },
+                                            frame: { duration: 600, redraw: false },
+                                        },
+                                    ],
+                                    label: 'Play',
+                                },
+                                {
+                                    method: 'animate',
+                                    args: [
+                                        [null],
+                                        {
+                                            mode: 'immediate',
+                                            transition: { duration: 0 },
+                                            frame: { duration: 0, redraw: false },
+                                        },
+                                    ],
+                                    label: 'Pause',
+                                },
+                            ],
+                        },
+                    ],
+                    sliders: [
+                        {
+                            pad: { l: 130, t: 55 },
+                            currentvalue: {
+                                visible: true,
+                                prefix: 'Time: ',
+                                xanchor: 'right',
+                                font: { size: 20, color: '#666' },
+                            },
+                            steps: sliderSteps,
+                        },
+                    ],
+                };
+
+                // رسم گراف
+                Plotly.newPlot('myDiv', {
+                    data: pollutionData,  // خطوط آلاینده‌ها و دایره‌ها همزمان نمایش داده می‌شوند
+                    layout: layout,
+                    frames: frames,
+                });
+            })
+            .catch(error => {
+                console.error("Error fetching data:", error);
+            });
+
+     </script>
+</body>
+</html>

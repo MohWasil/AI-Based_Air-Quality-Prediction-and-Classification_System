@@ -1,0 +1,588 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Quality Real Time Data Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+
+    <!-- Optional for Font Awesome Icons -->
+    <!-- Make sure you include Font Awesome CDN link -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- Load CesiumJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cesium/1.89/cesium.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cesium/1.89/cesium.min.css" rel="stylesheet">
+
+
+    <link rel="stylesheet" href="{% static 'ui/css/style.css' %}">
+
+    <!-- Add Plotly.js Library -->
+    <script src="https://cdn.plot.ly/plotly-2.26.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Include Leaflet 1.4.x -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
+
+    <!-- Include Windy API library -->
+    <script src="https://api.windy.com/assets/libBoot.js"></script>
+
+
+
+
+
+</head>
+
+<body>
+
+    <!-- Back to Top Button -->
+    <div id="backToTop" class="d-flex">
+        <i class="fas fa-arrow-up" style="font-size: 1.5rem; color: rgb(255, 255, 255);"></i>
+    </div>
+
+    <!-- Messenger Bubble -->
+    <div id="messengerBubble" class="shadow" data-bs-toggle="tooltip" data-bs-placement="bottom"
+        title="Get Information!">
+        <i class="fa-solid fa-message"></i>
+    </div>
+    <!-- Chat Body -->
+    <div id="chatBox">
+        <div id="chatHeader">Messenger</div>
+        <!-- Accodion Only User Click Open it -->
+        <div class="accordion" id="accordionExample">
+            <!--The First Ithem -->
+            <div class="accordion- p-1 accordion-border">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                        Account Type For Air Prediction
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne"
+                    data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <div class="list-group">
+                            <button class="list-group-item list-group-item-action"
+                                onclick="showDescription('induviaccount')">Individual User</button>
+                            <button class="list-group-item list-group-item-action"
+                                onclick="showDescription('orgaccount')">Organization User</button>
+                        </div>
+
+                        <!-- Description section -->
+                        <div id="description" class="mt-1 text-center">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--The Seconde Ithem-->
+            <div class="accordion-item p-1 accordion-border">
+                <h2 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        Send Your Question?
+                    </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                    data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <form id="chatFooter" class="d-block needs-validation" novalidate>
+                            <!-- Name Field -->
+                            <div class="form-floating mb-1 col-md-12 col-12">
+                                <input type="text" class="form-control" id="bubblemessengerName" placeholder="Name"
+                                    required>
+                                <label for="bubblemessengerName">Name</label>
+                                <div class="invalid-feedback">Please enter your name.</div>
+                            </div>
+
+                            <!-- Phone Field -->
+                            <div class="form-floating mb-1 col-md-12 col-12">
+                                <input type="tel" class="form-control" id="bubblemessengerPhone" placeholder="Phone"
+                                    pattern="^\+?[0-9\s\-]{7,15}$" required>
+                                <label for="bubblemessengerPhone">Phone</label>
+                                <div class="invalid-feedback">Please enter a valid phone number (e.g., +93123456).</div>
+                            </div>
+
+                            <!-- Email Field -->
+                            <div class="form-floating mb-1 col-md-12 col-12">
+                                <input type="email" class="form-control" id="bubblemessengerEmail" placeholder="Email"
+                                    required>
+                                <label for="bubblemessengerEmail">Email</label>
+                                <div class="invalid-feedback">Please enter a valid email address.</div>
+                            </div>
+
+                            <!-- Question Field -->
+                            <div class="form-floating mb-1 col-md-12 col-12">
+                                <textarea class="form-control" id="bubblemessengerQuestion" placeholder="Question"
+                                    style="height: 100px;" required></textarea>
+                                <label for="bubblemessengerQuestion">Question</label>
+                                <div class="invalid-feedback">Please enter your question.</div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit"
+                                class="btn btn-primary mt-2 col-md-12 col-12 btn-chat-submit">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Accodion Only User Click Open it -->
+    </div>
+    <!-- header -->
+    <header class="text-white text-center py-3">
+        <h1 class="text-center">Air Quality Prediction</h1>
+        <p class="text-center">Real-Time Air Quality Prediction and Classification System</p>
+    </header>
+     <!-- Navbar Section -->
+     <nav class="navbar navbar-expand-lg navbar-light bg-light" id="home">
+        <div class="container bg-light">
+            <!-- Logo on the Left -->
+            <a class="navbar-brand" href="{% url 'index' %}">
+                <img src="{% static 'ui/images/icon/air quality prediction.svg' %}" alt="Logo" width="100" height="100"
+                    style="margin-top: -20px; margin-bottom: -10px;">
+            </a>
+
+            <!-- Centered Menu Items -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto text-center">
+                    <li     vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvclass="nav-item">
+                        <a class="nav-link active fw-bold" aria-current="page" href="{% url 'index' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold" href="{% url 'index' %}#prediction">Prediction</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold" href="{% url 'index' %}#overvision">Vision</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold" href="{% url 'index'%}#levelair">Levels</a>
+                    </li>
+                </ul>
+                <!-- Login Icon on the Right -->
+                 {% if user.is_authenticated %}
+        
+                <!-- Profile -->
+                <div class="btn-group d-flex justify-content-center">
+                    <!-- Button to trigger the dropdown -->
+                    <a href="#"
+                       class="btn btn-secondary dropdown-toggle align-items-center"
+                       type="button"
+                       data-bs-toggle="dropdown"
+                       data-bs-boundary="viewport" aria-expanded="false" style="background-color: transparent; border: none;">
+                      <i class="fa-solid fa-circle-user" style="font-size: 2rem; color: #538221;"></i>
+                    </a>
+                  
+                    <!-- Dropdown Menu aligned to the end of the button -->
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <a class="dropdown-item" href="#profileOffcanvas"
+                           data-bs-toggle="offcanvas"
+                           data-bs-target="#profileOffcanvas"
+                           aria-controls="profileOffcanvas">
+                          <i class="fa-solid fa-cogs" style="margin-right: 10px;"></i>
+                          Account Settings
+                        </a>
+                      </li>
+                      <li>
+                        <a class="dropdown-item" href="/api/accounts/logout">
+                          <i class="fa-solid fa-sign-out-alt" style="margin-right: 10px;"></i>
+                          Log Out
+                        </a>
+                      </li>
+                    </ul>
+                  </div>                  
+                 {% else %}
+                 <a href="{% url 'login' %}"
+                    class="navbar-login-icon d-flex justify-content-center ms-auto text-decoration-none loginpro"
+                    data-bs-toggle="tooltip" data-bs-placement="bottom" title="Login">
+                    <i class="fa-solid fa-right-to-bracket" style="font-size: 2rem;"></i>
+                </a> 
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    <!-- Type Air Pullation -->
+    <div class="container mt-5">
+        <img src="{% static 'ui/images/img/mp25.webp' %}" alt="" class="position-relative w-100">
+        <br><br>
+        <br><br>
+        <h3 class="text-center display-4 fw-bold">Information about PM2.5</h3>
+        <br><br>
+        <br><br>
+        <section class="row">
+            <!-- Left Side: Text -->
+            <div class="col-md-8">
+                <h2><i class="fas fa-cloud-sun me-2 mx-2"></i> What is PM2.5?</h2>
+                <p class="text-start p-2">
+                    Particulate matter, or PM, refers to particles found in the air, including dust, soot, dirt, smoke, and liquid droplets.
+                    
+                    PM2.5 particles measure 2.5 microns or less in diameter. PM2.5 particles are so small they can only be seen with an
+                    electron microscope.
+                    
+                    Of all air pollution measures, PM2.5 pollution poses the greatest health threat. Due to its small size, PM2.5 can
+                    remain suspended in the air for long periods of time and can be absorbed deep into the bloodstream upon inhalation.
+                </p>
+
+                <h3><i class="fas fa-sliders-h me-2 mx-2"></i> Is there a difference between PM2.5 and PM10?</h3>
+                <p class="text-start p-2">
+                    PM10 and PM2.5 are both forms of pollutants that are different sizes. PM2.5 particles are considered to be fine and PM10
+                    is larger and more coarse. PM10 particles are between 2.5 and 10 micrograms.
+                    
+                    Our bodies can more easily defend against PM10 by sneezing or coughing. Those defenses don’t work with smaller particles.
+                    
+                    PM10 can embed within the lungs where they are associated with adverse health impacts, such as lung tissue damage and
+                    asthma. However, PM10 it isn’t as likely to enter the blood stream as PM2.5 due to its size.
+                </p>
+                <h3><i class="fas fa-building me-2 mx-2"></i> What are the sources of PM2.5 pollution?</h3>
+                <p class="text-start p-2">
+                    Particulate matter can be either emitted directly from manmade or natural sources, with manmade sources generally
+                    resulting in greater amount of PM2.5 (2).
+                    
+                    Some of the most common manmade sources of pollutant PM2.5 are:
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check"></i> Motor combustion</li>
+                    <li><i class="fas fa-check"></i> Power plant combustion</li>
+                    <li><i class="fas fa-check"></i> Industrial processes</li>
+                    <li><i class="fas fa-check"></i> Stoves, fireplaces, and home wood burning</li>
+                    <li><i class="fas fa-check"></i> Smoke from fireworks</li>
+                    <li><i class="fas fa-check"></i> Smoking</li>
+                </ul>
+
+                Natural sources of PM2.5 can include:
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check"></i> Dust</li>
+                    <li><i class="fas fa-check"></i> Soot</li>
+                    <li><i class="fas fa-check"></i> Dirt</li>
+                    <li><i class="fas fa-check"></i> Windblown salt</li>
+                    <li><i class="fas fa-check"></i> Plant spores</li>
+                    <li><i class="fas fa-check"></i> Pollen</li>
+                    <li><i class="fas fa-check"></i> Smoke from wildfires</li>
+                </ul>
+
+                The dominant sources of PM2.5 air quality can vary depending on the season, weather, climate, level of urbanization,
+                country, and region.
+                
+                A 1994 study in Atmospheric Environment looked at PM2.5 sources in the United States, determining that biomass burnings
+                were the highest contributors to PM2.5 pollution in the Northwest, while residual oil combustion was the dominant source
+                in the Northeast and in major seaport cities.
+                
+                Sources of pollutants can include emissions from neighboring countries. A 2019 study of source contributions in Canada
+                published in Environmental Science and Technology found that 33 percent of Central Canada’s pollutant PM2.5 originated
+                in the U.S.
+                
+                The same study uncovered that residential combustion was the primary source of PM2.5 in Central Canada, while wildfires
+                were the responsible sources for PM2.5 pollution in Northern, Atlantic, and Western Canada.
+                </p>
+
+                <h3><i class="fas fa-puzzle-piece me-2 mx-2"></i> What are the chemical components of PM2.5?</h3>
+                <p>
+                    PM2.5 can be created by other pollutants chemically reacting in the atmosphere.
+                    
+                    Chemical reaction between gases can be sources of PM2.5 pollutants, including reactions between (8):
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check"></i> Sulfur dioxide</li>
+                        <li><i class="fas fa-check"></i> Nitrogen oxides</li>
+                        <li><i class="fas fa-check"></i> Ammonia</li>
+                        <li><i class="fas fa-check"></i> Black carbon</li>
+                        <li><i class="fas fa-check"></i> Mineral dust</li>
+                        <li><i class="fas fa-check"></i> Water</li>
+                        <li><i class="fas fa-check"></i> Volatile organic compounds</li>
+                    </ul>
+                </p>
+                <h3><i class="fas fa-bolt me-2 mx-2"></i> What are the environmental effects of PM2.5 air quality?</h3>
+                <p>
+                    PM2.5 causes environmental harm in several ways, such as:
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check"></i> Damage of materials and buildings</li>
+                        <li><i class="fas fa-check"></i> Acid deposition</li>
+                        <li><i class="fas fa-check"></i> Increased ozone levels</li>
+                    </ul>
+                    PM2.5 pollution can travel long distances through strong winds, up to hundreds of thousands of miles from their source. PM2.5 can be carried to coastal waters and river basins, where they change the nutrient balance. When particle
+                    pollution settles on crops and forests, it can damage the vegetation.
+                </p>
+                <h3><i class="fas fa-house-damage me-2 mx-2"></i> Can PM2.5 affect indoor air quality?</h3>
+                <p>
+                    Outdoor sources of pollutant PM2.5 can impact indoor environments by entering through leaks in windows and doors as well
+                    as spaces within generally “leaky” buildings.
+                    
+                    An airtight home can’t protect against indoor sources of PM2.5, such as:
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check"></i> Cooking with wood</li>
+                        <li><i class="fas fa-check"></i> Candles</li>
+                        <li><i class="fas fa-check"></i> Incense burners</li>
+                        <li><i class="fas fa-check"></i> Fireplaces</li>
+                        <li><i class="fas fa-check"></i> Stoves</li>
+                        <li><i class="fas fa-check"></i> Smoking</li>
+                    </ul>
+                    Even household cleaners and air fresheners can create gaseous pollutants through chemical reactions, resulting in PM2.5
+                    pollution indoors.
+                </p>
+
+                <!-- effect -->
+                <h3><i class="fas fa-heartbeat me-2 mx-2"></i> How does PM2.5 pollution affect our health?</h3>
+                <p>
+                    PM 2.5’s microscopic size increases its potential to be lodged deep into the respiratory tracts. At 2.5 microns, PM2.5
+                    is capable of entering the circulatory system and even the brain (9). Short term symptoms of exposure to high levels of
+                    particulate matter include irritation of the throat and airways, coughing, and difficulty breathing (10).
+                    
+                    More serious, long-term complications can include:
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check"></i> Heart and lung disease</li>
+                        <li><i class="fas fa-check"></i> Bronchitis</li>
+                        <li><i class="fas fa-check"></i> Emphysema</li>
+                        <li><i class="fas fa-check"></i> Nonfatal heart attacks</li>
+                        <li><i class="fas fa-check"></i> Irregular heartbeat</li>
+                        <li><i class="fas fa-check"></i> Asthma and more intense flare-ups</li>
+                        <li><i class="fas fa-check"></i> Decreased lung function</li>
+                        <li><i class="fas fa-check"></i> Early death</li>
+                    </ul>
+
+                    People with heart or lung diseases, children, and older adults are most likely to be affected by particle pollution
+                    exposure.
+                    
+                    Numerous studies have confirmed a multitude of serious health complications caused by exposure to pollutant PM2.5.
+                    
+                    For example, a 2011 study published in The American Journal of Respiratory and Critical Care Medicine tracked 1.2
+                    million Americans from 1982 until 2008 (11). Each 10 microgram per cubic meter increase in PM2.5 concentrations was
+                    associated with a 15-27% increase in lung cancer mortality.
+                    
+                    PM2.5 pollution has been tied to increased risk of asthma in young children in Denmark, according to a 2020 study
+                    published in the British Medical Journal(12). All children born between 1997 and 2014 were followed for asthma onset and
+                    persistent wheezing from age 1 to 15. The study found that children exposed to higher levels of PM2.5 were more likely
+                    to develop asthma and persistent wheezing than children who weren’t exposed.
+                </p>
+
+                <a href="https://www.iqair.com/newsroom/pm2-5" class="text-start fw-bold btn btn-dark col-md-4 text-decoration-none mb-4">Read More about</a>
+                <!-- Conclusion -->
+                <h3>Conclusion</h3>
+                <p class="p-2 text-start">
+                    PM2.5, fine particulate matter with a diameter of less than 2.5 micrometers, poses a significant health risk due to its
+                    ability to penetrate deep into the respiratory system and enter the bloodstream. Exposure to these particles is linked
+                    to exacerbating respiratory issues such as asthma and chronic obstructive pulmonary disease (COPD), cardiovascular
+                    diseases, stroke, type 2 diabetes, and even lung cancer. Long-term exposure to PM2.5 increases the risk of premature
+                    death, especially among individuals with existing heart or lung conditions. These particles originate from both natural
+                    sources, like wildfires and dust storms, and human activities, such as fossil fuel combustion and industrial processes.
+                    Given its severe health implications, organizations like the World Health Organization (WHO) have established guidelines
+                    to limit PM2.5 exposure; for instance, the WHO recommends an annual mean of no more than 5 micrograms per cubic meter
+                    and a 24-hour mean of no more than 15 micrograms per cubic meter. Adhering to these standards is crucial for mitigating
+                    the adverse health impacts of air pollution.
+                </p>
+                <!-- resource -->
+                <h4><i class="fas fa-book me-2 mx-2"></i> Sources</h4>
+                <ul>
+                    <li class="source-item">
+                        <i class="fas fa-check-circle"></i><a href="https://www.iqair.com/newsroom/pm2-5"
+                            class="text-decoration-none">IQAir</a>
+                    </li>
+                    <li class="source-item">
+                        <i class="fas fa-check-circle"></i><a
+                            href="https://www.who.int/health-topics/air-pollution#tab=tab_1"
+                            class="text-decoration-none">World
+                            Health Organization</a>
+                    </li>
+                    <li class="source-item">
+                        <i class="fas fa-check-circle"></i><a href="https://www.cdc.gov/air/particulate_matter.html"
+                            class="text-decoration-none">Centers for Disease
+                            Control</a>
+                    </li>
+                    <li class="source-item">
+                        <i class="fas fa-check-circle"></i><a
+                            href="https://www.epa.gov/pm-pollution/particulate-matter-pm-basics"
+                            class="text-decoration-none">Environmental Protection Agency (EPA)</a>
+                    </li>
+                </ul>
+
+            </div>
+
+            <!-- Right Side: Image -->
+            <div class="col-md-4">
+                <div class="row gap-3">
+                    <div class="md-4">
+                        <h4>Health Effects Image</h4>
+                        <img src="{% static 'ui/images/img/effects-of-air-pollution-on-human-health.webp' %}" alt="Health Effects of PM10"
+                            class="img-fluid">
+                    </div>
+                    <div class="mb-4">
+                        <h4>Environmental Impact Image</h4>
+                        <img src="{% static 'ui/images/img/mp25.webp' %}" alt="Environmental Impact of PM10" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+
+
+    <!-- Footer Section -->
+    <footer class=" bg-light text-dark py-5">
+        <div class="container">
+            <div class="row gy-4 border-bottom pb-4">
+                <div class="col-md-3 col-12">
+                    <a class="navbar-brand d-flex justify-content-center" href="{% url "index" %}">
+                        <img src=" {% static 'ui/images/icon/air quality prediction.svg' %}" alt="Logo" width="160" height="160"
+                            style="margin-top: -20px; margin-bottom: -10px;">
+                    </a>
+                    <h4 class="fw-bold text-center mt-3">Air Quality Prediction</h4>
+                    <p class="text-center">
+                        We provide real-time air quality monitoring and personalized health insights to help you improve
+                        your surroundings and well-being.
+                    </p>
+                </div>
+
+                <div class="col-md-3 col-12">
+                    <h5 class="fw-bold text-center">Useful Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#createUsertype"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Home</a>
+                        </li>
+                        <li><a href="{% url "about" %}"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">About</a>
+                        </li>
+                        <li><a href="{% url 'index'%}#overvision"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Vision</a>
+                        </li>
+                        <li><a href="{% url 'index' %}#levelair" class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Air
+                                Levels</a></li>
+                        <li><a href="{% url "termandcondition" %}"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Terms and
+                                Conditions</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 col-12">
+                    <h5 class="fw-bold text-center">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#timeSerise"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Graph
+                                Visualization</a></li>
+                        <li><a href="{% url 'index' %}#createUsertype"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Individual
+                                Prediction</a></li>
+                        <li><a href="{% url 'index' %}#createUsertype"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Organization
+                                Prediction</a></li>
+                        <li><a href="{% url "login" %}"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Create
+                                Account</a></li>
+                        <li><a href="{% url 'index' %}#airqualityReanges"
+                                    class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">
+                                Air Quality Color Ranges
+                            </a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 col-12">
+                    <h5 class="fw-bold text-center">Mor Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#Frequentlyqus"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Frequently Question</a></li>
+                        <li><a href="{% url "mp10" %}"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Pollutant PM10</a></li>
+                        <li><a href="{% url "mp25" %}"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Pollutant PM 2.5</a></li>
+                        <li><a href="{% url "environmental_pollution" %}"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Environmental Pollution</a></li>
+                        <li><a href="{% url "health_care_preservation" %}"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Healthcare Preservation</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Footter Second Part-->
+            <div class="row text-center mt-4 d-flex justify-content-between">
+                <!-- social Medai -->
+                <div class="col-lg-6 col-md-12 mb-3">
+                    <h5 class="fw-bold">Follow Us</h5>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="#" class="text-dark fs-4 sociamedia"><i class="fa-brands fa-facebook"
+                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="Facebook"></i></a>
+                        <a href="#" class="text-dark fs-4 sociamedia"><i class="fa-brands fa-instagram"
+                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="Instagram"></i>
+                            <a href="#" class="text-dark  sociamedia fs-4"><i class="fa-brands fa-github"
+                                    data-bs-toggle="tooltip" data-bs-placement="bottom" title="GitHub"></i></a>
+                            <a href="#" class="text-dark  sociamedia fs-4"><i class="fa-brands fa-kaggle"
+                                    data-bs-toggle="tooltip" data-bs-placement="bottom" title="Kaggle"></i></a>
+                    </div>
+                </div>
+
+
+                <!-- Subscribe -->
+                <div class="col-lg-4 col-md-12 mb-3">
+                    <h5 class="fw-bold text-start">Subscribe</h5>
+                    <form id="emailForm" novalidate>
+                        <div class="input-group justify-content-center">
+                            <input type="email" class="form-control w-50" id="emailInput" placeholder="Enter your email"
+                                pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+,-\.[a-zA-Z]{2,}$" required>
+                            <button class="btn btn-dark" type="submit">Subscribe</button>
+                            <div class="invalid-feedback text-center mt-2">Please enter a valid email address. This field cannot be empty.
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+
+
+
+    <!-- Popover and back to top -->
+    <script>
+        // Initialize all tooltips
+        document.addEventListener('DOMContentLoaded', function () {
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+        });
+
+        // Show/Hide Back to Top Button
+        const backToTop = document.getElementById("backToTop");
+
+        window.addEventListener("scroll", () => {
+            if (window.scrollY > 200) {
+                backToTop.style.display = "flex";
+            } else {
+                backToTop.style.display = "none";
+            }
+        });
+
+        // Scroll to Top on Click
+        backToTop.addEventListener("click", () => {
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth",
+            });
+        });
+    </script>
+
+    <footer class="text-white text-center py-3 footerpart">
+        <p>&copy; <span id="currentYear"></span> Air Quality Monitoring. All Rights Reserved.</p>
+    </footer>
+    
+    <script>
+        document.getElementById("currentYear").textContent = new Date().getFullYear();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script src="{% static 'ui/js/main.js' %}"></script>
+    <script src="{% static 'ui/js/potly.js' %}"></script>
+    <script src="{% static 'ui/js/bubbleMessenger.js' %}"></script>
+    <script src="{% static 'ui/js/contact.js' %}"></script>
+    <script src="{% static 'ui/js/subscribe.js' %}"></script>
+
+
+
+
+</body>
+
+</html>

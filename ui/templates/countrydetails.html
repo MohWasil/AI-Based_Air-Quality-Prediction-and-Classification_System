@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Quality Real Time Data Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+
+    <!-- Optional for Font Awesome Icons -->
+    <!-- Make sure you include Font Awesome CDN link -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+
+    <link rel="stylesheet" href="../static/css/style.css">
+
+    <!-- Add Plotly.js Library -->
+    <script src="https://cdn.plot.ly/plotly-2.26.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Include Leaflet 1.4.x -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
+
+    <!-- Include Windy API library -->
+    <script src="https://api.windy.com/assets/libBoot.js"></script>
+
+
+</head>
+
+<body>
+
+    <!-- Back to Top Button -->
+    <div id="backToTop" class="d-flex">
+        <i class="fas fa-arrow-up" style="font-size: 1.5rem; color: rgb(255, 255, 255);"></i>
+    </div>
+
+    <!-- Messenger Bubble -->
+    <div id="messengerBubble" class="shadow" data-bs-toggle="tooltip" data-bs-placement="bottom"
+        title="Get Information!">
+        <i class="fa-solid fa-message"></i>
+    </div>
+    <!-- Chat Body -->
+    <div id="chatBox">
+        <div id="chatHeader">Messenger</div>
+        <!-- Accodion Only User Click Open it -->
+        <div class="accordion" id="accordionExample">
+            <!--The First Ithem -->
+            <div class="accordion- p-1 accordion-border">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                        Account Type For Air Prediction
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne"
+                    data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <div class="list-group">
+                            <button class="list-group-item list-group-item-action"
+                                onclick="showDescription('induviaccount')">Individual User</button>
+                            <button class="list-group-item list-group-item-action"
+                                onclick="showDescription('orgaccount')">Organization User</button>
+                        </div>
+
+                        <!-- Description section -->
+                        <div id="description" class="mt-1 text-center">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--The Seconde Ithem-->
+            <div class="accordion-item p-1 accordion-border">
+                <h2 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        Send Your Question?
+                    </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                    data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <form id="chatFooter" class="d-block needs-validation" novalidate>
+                            <!-- Name Field -->
+                            <div class="form-floating mb-1 col-md-12 col-12">
+                                <input type="text" class="form-control" id="bubblemessengerName" placeholder="Name"
+                                    required>
+                                <label for="bubblemessengerName">Name</label>
+                                <div class="invalid-feedback">Please enter your name.</div>
+                            </div>
+
+                            <!-- Phone Field -->
+                            <div class="form-floating mb-1 col-md-12 col-12">
+                                <input type="tel" class="form-control" id="bubblemessengerPhone" placeholder="Phone"
+                                    pattern="^\+?[0-9\s\-]{7,15}$" required>
+                                <label for="bubblemessengerPhone">Phone</label>
+                                <div class="invalid-feedback">Please enter a valid phone number (e.g., +93123456).</div>
+                            </div>
+
+                            <!-- Email Field -->
+                            <div class="form-floating mb-1 col-md-12 col-12">
+                                <input type="email" class="form-control" id="bubblemessengerEmail" placeholder="Email"
+                                    required>
+                                <label for="bubblemessengerEmail">Email</label>
+                                <div class="invalid-feedback">Please enter a valid email address.</div>
+                            </div>
+
+                            <!-- Question Field -->
+                            <div class="form-floating mb-1 col-md-12 col-12">
+                                <textarea class="form-control" id="bubblemessengerQuestion" placeholder="Question"
+                                    style="height: 100px;" required></textarea>
+                                <label for="bubblemessengerQuestion">Question</label>
+                                <div class="invalid-feedback">Please enter your question.</div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit"
+                                class="btn btn-primary mt-2 col-md-12 col-12 btn-chat-submit">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Accodion Only User Click Open it -->
+    </div>
+
+    <!-- Offcanvas for Profile Update -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="profileOffcanvas" aria-labelledby="profileOffcanvasLabel"
+        data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="profileOffcanvasLabel">Update Profile</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body" style="max-height: 80vh; overflow-y: auto;">
+            <form id="profileForm">
+                <!-- Full Name -->
+                <div class="mb-3 form-floating">
+                    <input type="text" class="form-control" id="updateFullname" placeholder="Full Name" required>
+                    <label for="updateFullname">Full Name</label>
+                    <div class="invalid-feedback" id="errorUpdateFullname"></div>
+                </div>
+
+                <!-- Email -->
+                <div class="mb-3 form-floating">
+                    <input type="email" class="form-control" id="updateEmail" placeholder="Email" required>
+                    <label for="updateEmail">Email</label>
+                    <div class="invalid-feedback" id="errorUpdateEmail"></div>
+                </div>
+
+                <!-- Phone Number -->
+                <div class="mb-3 form-floating">
+                    <input type="text" class="form-control" id="updatePhone" pattern="[0-9]+" placeholder="Phone Number"
+                        required>
+                    <label for="updatePhone">Phone Number</label>
+                    <div class="invalid-feedback" id="errorUpdatePhone"></div>
+                    <div class="form-text">Please enter a valid phone number. This will be used to contact you about air
+                        quality updates, even when you're offline.</div>
+                </div>
+
+                <!-- Country -->
+                <div class="mb-3 form-floating">
+                    <select class="form-select" id="updateCountry" required>
+                        <option value="">Select your country</option>
+                        <option value="Afghanistan">Afghanistan</option>
+                        <option value="Albania">Albania</option>
+                        <option value="Algeria">Algeria</option>
+                        <option value="Andorra">Andorra</option>
+                        <option value="Angola">Angola</option>
+                        <option value="Antigua and Barbuda">Antigua and Barbuda</option>
+                        <option value="Argentina">Argentina</option>
+                        <option value="Armenia">Armenia</option>
+                        <option value="Australia">Australia</option>
+                        <option value="Austria">Austria</option>
+                        <option value="Azerbaijan">Azerbaijan</option>
+                        <option value="Bahamas">Bahamas</option>
+                        <option value="Bahrain">Bahrain</option>
+                        <option value="Bangladesh">Bangladesh</option>
+                        <option value="Barbados">Barbados</option>
+                        <option value="Belarus">Belarus</option>
+                        <option value="Belgium">Belgium</option>
+                        <option value="Belize">Belize</option>
+                        <option value="Benin">Benin</option>
+                        <option value="Bhutan">Bhutan</option>
+                        <option value="Bolivia">Bolivia</option>
+                        <option value="Bosnia and Herzegovina">Bosnia and Herzegovina</option>
+                        <option value="Botswana">Botswana</option>
+                        <option value="Brazil">Brazil</option>
+                        <option value="Brunei">Brunei</option>
+                        <option value="Bulgaria">Bulgaria</option>
+                        <option value="Burkina Faso">Burkina Faso</option>
+                        <option value="Burundi">Burundi</option>
+                        <option value="Cabo Verde">Cabo Verde</option>
+                        <option value="Cambodia">Cambodia</option>
+                        <option value="Cameroon">Cameroon</option>
+                        <option value="Canada">Canada</option>
+                        <option value="Central African Republic">Central African Republic</option>
+                        <option value="Chad">Chad</option>
+                        <option value="Chile">Chile</option>
+                        <option value="China">China</option>
+                        <option value="Colombia">Colombia</option>
+                        <option value="Comoros">Comoros</option>
+                        <option value="Congo (Congo-Brazzaville)">Congo (Congo-Brazzaville)</option>
+                        <option value="Costa Rica">Costa Rica</option>
+                        <option value="Croatia">Croatia</option>
+                        <option value="Cuba">Cuba</option>
+                        <option value="Cyprus">Cyprus</option>
+                        <option value="Czechia (Czech Republic)">Czechia (Czech Republic)</option>
+                        <option value="Denmark">Denmark</option>
+                        <option value="Djibouti">Djibouti</option>
+                        <option value="Dominica">Dominica</option>
+                        <option value="Dominican Republic">Dominican Republic</option>
+                        <option value="Ecuador">Ecuador</option>
+                        <option value="Egypt">Egypt</option>
+                        <option value="El Salvador">El Salvador</option>
+                        <option value="Equatorial Guinea">Equatorial Guinea</option>
+                        <option value="Eritrea">Eritrea</option>
+                        <option value="Estonia">Estonia</option>
+                        <option value="Eswatini (fmr. Swaziland)">Eswatini (fmr. Swaziland)</option>
+                        <option value="Ethiopia">Ethiopia</option>
+                        <option value="Fiji">Fiji</option>
+                        <option value="Finland">Finland</option>
+                        <option value="France">France</option>
+                        <option value="Gabon">Gabon</option>
+                        <option value="Gambia">Gambia</option>
+                        <option value="Georgia">Georgia</option>
+                        <option value="Germany">Germany</option>
+                        <option value="Ghana">Ghana</option>
+                        <option value="Greece">Greece</option>
+                        <option value="Grenada">Grenada</option>
+                        <option value="Guatemala">Guatemala</option>
+                        <option value="Guinea">Guinea</option>
+                        <option value="Guinea-Bissau">Guinea-Bissau</option>
+                        <option value="Guyana">Guyana</option>
+                        <option value="Haiti">Haiti</option>
+                        <option value="Holy See">Holy See</option>
+                        <option value="Honduras">Honduras</option>
+                        <option value="Hungary">Hungary</option>
+                        <option value="Iceland">Iceland</option>
+                        <option value="India">India</option>
+                        <option value="Indonesia">Indonesia</option>
+                        <option value="Iran">Iran</option>
+                        <option value="Iraq">Iraq</option>
+                        <option value="Ireland">Ireland</option>
+                        <option value="Israel">Israel</option>
+                        <option value="Italy">Italy</option>
+                        <option value="Jamaica">Jamaica</option>
+                        <option value="Japan">Japan</option>
+                        <option value="Jordan">Jordan</option>
+                        <option value="Kazakhstan">Kazakhstan</option>
+                        <option value="Kenya">Kenya</option>
+                        <option value="Kiribati">Kiribati</option>
+                        <option value="Kuwait">Kuwait</option>
+                        <option value="Kyrgyzstan">Kyrgyzstan</option>
+                        <option value="Laos">Laos</option>
+                        <option value="Latvia">Latvia</option>
+                        <option value="Lebanon">Lebanon</option>
+                        <option value="Lesotho">Lesotho</option>
+                        <option value="Liberia">Liberia</option>
+                        <option value="Libya">Libya</option>
+                        <option value="Liechtenstein">Liechtenstein</option>
+                        <option value="Lithuania">Lithuania</option>
+                        <option value="Luxembourg">Luxembourg</option>
+                        <option value="Madagascar">Madagascar</option>
+                        <option value="Malawi">Malawi</option>
+                        <option value="Malaysia">Malaysia</option>
+                        <option value="Maldives">Maldives</option>
+                        <option value="Mali">Mali</option>
+                        <option value="Malta">Malta</option>
+                        <option value="Marshall Islands">Marshall Islands</option>
+                        <option value="Mauritania">Mauritania</option>
+                        <option value="Mauritius">Mauritius</option>
+                        <option value="Mexico">Mexico</option>
+                        <option value="Micronesia">Micronesia</option>
+                        <option value="Moldova">Moldova</option>
+                        <option value="Monaco">Monaco</option>
+                        <option value="Mongolia">Mongolia</option>
+                        <option value="Montenegro">Montenegro</option>
+                        <option value="Morocco">Morocco</option>
+                        <option value="Mozambique">Mozambique</option>
+                        <option value="Myanmar (formerly Burma)">Myanmar (formerly Burma)</option>
+                        <option value="Namibia">Namibia</option>
+                        <option value="Nauru">Nauru</option>
+                        <option value="Nepal">Nepal</option>
+                        <option value="Netherlands">Netherlands</option>
+                        <option value="New Zealand">New Zealand</option>
+                        <option value="Nicaragua">Nicaragua</option>
+                        <option value="Niger">Niger</option>
+                        <option value="Nigeria">Nigeria</option>
+                        <option value="North Korea">North Korea</option>
+                        <option value="North Macedonia">North Macedonia</option>
+                        <option value="Norway">Norway</option>
+                        <option value="Oman">Oman</option>
+                        <option value="Pakistan">Pakistan</option>
+                        <option value="Palau">Palau</option>
+                        <option value="Palestine State">Palestine State</option>
+                        <option value="Panama">Panama</option>
+                        <option value="Papua New Guinea">Papua New Guinea</option>
+                        <option value="Paraguay">Paraguay</option>
+                        <option value="Peru">Peru</option>
+                        <option value="Philippines">Philippines</option>
+                        <option value="Poland">Poland</option>
+                        <option value="Portugal">Portugal</option>
+                        <option value="Qatar">Qatar</option>
+                        <option value="Romania">Romania</option>
+                        <option value="Russia">Russia</option>
+                        <option value="Rwanda">Rwanda</option>
+                        <option value="Saint Kitts and Nevis">Saint Kitts and Nevis</option>
+                        <option value="Saint Lucia">Saint Lucia</option>
+                        <option value="Saint Vincent and the Grenadines">Saint Vincent and the Grenadines
+                        </option>
+                        <option value="Samoa">Samoa</option>
+                        <option value="San Marino">San Marino</option>
+                        <option value="Sao Tome and Principe">Sao Tome and Principe</option>
+                        <option value="Saudi Arabia">Saudi Arabia</option>
+                        <option value="Senegal">Senegal</option>
+                        <option value="Serbia">Serbia</option>
+                        <option value="Seychelles">Seychelles</option>
+                        <option value="Sierra Leone">Sierra Leone</option>
+                        <option value="Singapore">Singapore</option>
+                        <option value="Slovakia">Slovakia</option>
+                        <option value="Slovenia">Slovenia</option>
+                        <option value="Solomon Islands">Solomon Islands</option>
+                        <option value="Somalia">Somalia</option>
+                        <option value="South Africa">South Africa</option>
+                        <option value="South Korea">South Korea</option>
+                        <option value="South Sudan">South Sudan</option>
+                        <option value="Spain">Spain</option>
+                        <option value="Sri Lanka">Sri Lanka</option>
+                        <option value="Sudan">Sudan</option>
+                        <option value="Suriname">Suriname</option>
+                        <option value="Sweden">Sweden</option>
+                        <option value="Switzerland">Switzerland</option>
+                        <option value="Syria">Syria</option>
+                        <option value="Tajikistan">Tajikistan</option>
+                        <option value="Tanzania">Tanzania</option>
+                        <option value="Thailand">Thailand</option>
+                        <option value="Timor-Leste">Timor-Leste</option>
+                        <option value="Togo">Togo</option>
+                        <option value="Tonga">Tonga</option>
+                        <option value="Trinidad and Tobago">Trinidad and Tobago</option>
+                        <option value="Tunisia">Tunisia</option>
+                        <option value="Turkey">Turkey</option>
+                        <option value="Turkmenistan">Turkmenistan</option>
+                        <option value="Tuvalu">Tuvalu</option>
+                        <option value="Uganda">Uganda</option>
+                        <!-- Add other countries as needed -->
+                    </select>
+                    <label for="updateCountry">Country</label>
+                    <div class="invalid-feedback" id="errorUpdateCountry"></div>
+                </div>
+
+                <!-- Password Change -->
+                <div class="mb-3 form-floating">
+                    <input type="password" class="form-control" id="updateOldPassword" placeholder="Old Password"
+                        required>
+                    <label for="updateOldPassword">Old Password</label>
+                    <div class="invalid-feedback" id="errorUpdateOldPassword"></div>
+                </div>
+                <div class="mb-3 form-floating">
+                    <input type="password" class="form-control" id="updateNewPassword" placeholder="New Password"
+                        required>
+                    <label for="updateNewPassword">New Password</label>
+                    <div class="invalid-feedback" id="errorUpdateNewPassword"></div>
+                </div>
+                <div class="mb-3 form-floating">
+                    <input type="password" class="form-control" id="updateConfirmNewPassword"
+                        placeholder="Confirm New Password" required>
+                    <label for="updateConfirmNewPassword">Confirm New Password</label>
+                    <div class="invalid-feedback" id="errorUpdateConfirmNewPassword"></div>
+                </div>
+
+                <!-- Offline Alert Checkbox -->
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="updateOfflineAlert">
+                    <label class="form-check-label" for="updateOfflineAlert">Receive offline alerts for air quality
+                        updates</label>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-dark">Save Changes</button>
+            </form>
+        </div>
+        <div class="offcanvas-footer p-3 border-top">
+            <p class="text-start text-danger" id="textWarning"></p>
+        </div>
+    </div>
+
+    <!-- header -->
+    <header class="text-white text-center py-3">
+        <h1 class="text-center">Air Quality Prediction</h1>
+        <p class="text-center">Real-Time Air Quality Prediction and Classification System</p>
+    </header>
+     <!-- Navbar Section -->
+     <nav class="navbar navbar-expand-lg navbar-light bg-light" id="home">
+        <div class="container bg-light">
+            <!-- Logo on the Left -->
+            <a class="navbar-brand" href="{% url 'index' %}">
+                <img src="{% static 'ui/images/icon/air quality prediction.svg' %}" alt="Logo" width="100" height="100"
+                    style="margin-top: -20px; margin-bottom: -10px;">
+            </a>
+
+            <!-- Centered Menu Items -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto text-center">
+                    <li class="nav-item">
+                        <a class="nav-link active fw-bold" aria-current="page" href="{% url 'index' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold" href="{% url 'index' %}#prediction">Prediction</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold" href="{% url 'index' %}#overvision">Vision</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold" href="{% url 'index'%}#levelair">Levels</a>
+                    </li>
+                </ul>
+                <!-- Login Icon on the Right -->
+                 {% if user.is_authenticated %}
+        
+                <!-- Profile -->
+                <div class="btn-group d-flex justify-content-center">
+                    <!-- Button to trigger the dropdown -->
+                    <a href="#"
+                       class="btn btn-secondary dropdown-toggle align-items-center"
+                       type="button"
+                       data-bs-toggle="dropdown"
+                       data-bs-boundary="viewport" aria-expanded="false" style="background-color: transparent; border: none;">
+                      <i class="fa-solid fa-circle-user" style="font-size: 2rem; color: #538221;"></i>
+                    </a>
+                  
+                    <!-- Dropdown Menu aligned to the end of the button -->
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <a class="dropdown-item" href="#profileOffcanvas"
+                           data-bs-toggle="offcanvas"
+                           data-bs-target="#profileOffcanvas"
+                           aria-controls="profileOffcanvas">
+                          <i class="fa-solid fa-cogs" style="margin-right: 10px;"></i>
+                          Account Settings
+                        </a>
+                      </li>
+                      <li>
+                        <a class="dropdown-item" href="/api/accounts/logout">
+                          <i class="fa-solid fa-sign-out-alt" style="margin-right: 10px;"></i>
+                          Log Out
+                        </a>
+                      </li>
+                    </ul>
+                  </div>                  
+                 {% else %}
+                 <a href="{% url 'login' %}"
+                    class="navbar-login-icon d-flex justify-content-center ms-auto text-decoration-none loginpro"
+                    data-bs-toggle="tooltip" data-bs-placement="bottom" title="Login">
+                    <i class="fa-solid fa-right-to-bracket" style="font-size: 2rem;"></i>
+                </a> 
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <section class="position-relative section-hero d-flex flex-wrop"
+        style="height: 80vh; background-image: url('../static/images/img/main.png'); background-size: cover; background-position: center;">
+        <div class="container text-center">
+        <!-- Welcome message, country, and city -->
+        <div class="container my-5">
+            <div class="d-flex flex-column flex-md-row align-items-stretch justify-content-between bg-light rounded p-4">
+                <!-- Left Section (Welcome Message) -->
+                <div class="text-center mb-4 mb-md-0 bg-light rounded-1 py-3 flex-fill">
+                    <h2 class="mb-4 display-5 fw-bold">Air Quality Monitoring</h2>
+                    <h5 class="fs-5" id="location-info">Loading your location...</h5>
+                </div>
+        
+                <!-- Divider -->
+                <div class="d-none d-md-block mx-3 border-start border-2"></div> <!-- Vertical Line for large screens -->
+                <div class="d-block d-md-none border-top border-2 my-3"></div> <!-- Horizontal Line for small screens -->
+        
+                <!-- Right Section (Air Quality Card) -->
+                <div class="bg-light rounded-1 py-3 flex-fill">
+                    <!-- Title -->
+                    <h4 class="text-start mb-4">Air Quality Around Me</h4>
+                    <!-- Content -->
+                    <div class="d-flex flex-column flex-md-row align-items-center justify-content-between">
+                        <!-- Text Section -->
+                        <div class="text-section mb-4 mb-md-0 text-center text-md-start">
+                            <p class="text-muted mb-2">
+                                <strong>Kabul</strong>
+                                <span class="text-decoration-none ms-2">| 1 Sensor</span>
+                            </p>
+                            <div class="text-highlight">
+                                <h5>
+                                    <i class="fas fa-wind" style="color: rgb(88, 88, 88);"></i>
+                                    Kabul. AF AQI: <span class="fw-bold">154</span>
+                                </h5>
+                                <p class="mb-0 fw-bold text-light">Unhealthy</p>
+                            </div>
+                        </div>
+                        <!-- Image Section -->
+                        <div class="image-section text-center">
+                            <img src="../static/images/icon/man-mask.png" alt="Man with mask" class="img-fluid" style="max-height: 150px;">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- Special Prediction -->
+        <div class="row g-4">
+            <!-- Air Quality Cards -->
+            <div class="col-md-3 col-6 rounded-1">
+                <div class="card text-center shadow-lg rounded-1">
+                    <div class="card-body">
+                        <i class="fas fa-smog display-4 text-warning"></i> <!-- Font Awesome icon for PM 2.5 -->
+                        <h5 class="card-title mt-3">PM 2.5</h5>
+                        <p class="card-text fs-5">45 μg/m³</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 rounded-1">
+                <div class="card text-center shadow-lg rounded-1">
+                    <div class="card-body">
+                        <i class="fas fa-cloud-sun display-4 text-primary"></i> <!-- Font Awesome icon for PM 10 -->
+                        <h5 class="card-title mt-3">PM 10</h5>
+                        <p class="card-text fs-5">60 μg/m³</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 rounded-1">
+                <div class="card text-center shadow-lg rounded-1">
+                    <div class="card-body">
+                        <i class="fas fa-tint display-4 text-info"></i> <!-- Font Awesome icon for NO₂ -->
+                        <h5 class="card-title mt-3">NO₂</h5>
+                        <p class="card-text fs-5">30 ppb</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 rounded-1">
+                <div class="card text-center shadow-lg rounded-1">
+                    <div class="card-body rounded-1">
+                        <i class="fas fa-wind display-4 text-success"></i> <!-- Font Awesome icon for O₃ -->
+                        <h5 class="card-title mt-3">O₃</h5>
+                        <p class="card-text fs-5">25 ppb</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </section>
+
+
+
+    <div class="container mt-5">
+       
+        <h2 class="fw-bold display-7">
+            The specific Table Air Pollution Must City in This Country
+        </h2>
+        <!-- Description about the air pollution situation -->
+        <p> The table below summarizes the air pollution levels in the most polluted cities in <span class="fw-bold linkhint">Afghanistan</span>. These cities face
+            severe air quality issues that significantly impact public health.
+        </p>
+    
+        <!-- Table with polluted cities and pollution substances -->
+        <table class="table table-bordered">
+            <thead class="table-success">
+                <tr>
+                    <th scope="col-md-1 col-1">City</th>
+                    <th scope="col">Pollutants</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="text-start fw-bold">Kabul</td>
+                    <td>PM2.5, Carbon Monoxide (CO), Nitrogen Dioxide (NO2)</td>
+                </tr>
+                <tr>
+                    <td class="text-start fw-bold">Herat</td>
+                    <td>No Data</td>
+                </tr>
+                <tr>
+                    <td class="text-start fw-bold">Kandahar</td>
+                    <td>No Data</td>
+                </tr>
+                <tr>
+                    <td class="text-start fw-bold">Mazar-i-Sharif</td>
+                    <td>No Data</td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- Windy liver Map -->
+         <br><br>
+         <h5 class="text-center fw-bold"> <span class="fw-bold linkhint">Afghanistan</span> Live Map With Marked pollution substance</h5>
+        <div id="windy" class="position-relative rounded-1 afghanistanmap"></div>
+    </div>
+
+    <!-- Plaices -->
+    <section class="policies-actions mt-5">
+        <div class="container">
+            <div class="row">
+                <!-- Left Section: Policies, Actions, and Suggestions -->
+                <div class="col-lg-7 mb-4 col-12">
+                    <!-- Risks Section -->
+                    <div class="mb-5">
+                        <h3 class="mb-3"><i class="fas fa-exclamation-triangle text-danger me-2"></i>Risks</h3>
+                        <p>Air pollution poses significant risks to public health, including respiratory issues,
+                            cardiovascular diseases, and long-term environmental damage. It contributes to global warming
+                            and reduces overall life expectancy.</p>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <i class="fas fa-check-circle text-danger  me-2"></i> Increased respiratory illnesses,
+                                including asthma and bronchitis
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-check-circle text-danger me-2"></i> Adverse effects on vulnerable
+                                populations, particularly children and elderly individuals
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-check-circle text-danger me-2"></i> Significant contribution to climate
+                                change through greenhouse gas emissions
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-check-circle text-danger me-2"></i> Reduction in crop yields and
+                                biodiversity loss
+                            </li>
+                            <li class="list-group-item">
+                                <a href="https://www.who.int/news-room/fact-sheets/detail/ambient-(outdoor)-air-quality-and-health" target="_blank"
+                                    class="btn btn-link text-decoration-none linkhint">Learn More
+                                    <i class="fas fa-arrow-right ms-2"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+    
+                    <!-- Actions Section -->
+                    <div class="mb-5">
+                        <h3 class="mb-3"><i class="fas fa-hands-helping text-primary me-2"></i>Actions</h3>
+                        <p>International and local organizations have implemented a range of measures to combat air
+                            pollution and mitigate its adverse effects on health and the environment.</p>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <i class="fas fa-check-circle text-primary me-2"></i> Transitioning to renewable energy
+                                sources such as solar and wind power
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-check-circle text-primary me-2"></i> Promoting the use of electric and
+                                hybrid vehicles to reduce emissions
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-check-circle text-primary me-2"></i> Enhancing urban planning to reduce
+                                traffic congestion
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-check-circle text-primary me-2"></i> Implementing stricter industrial
+                                emission regulations
+                            </li>
+                            <li class="list-group-item">
+                                <a href="https://www.epa.gov/clean-air-act-overview" target="_blank" class="btn btn-link text-decoration-none linkhint">Learn
+                                    More
+                                    <i class="fas fa-arrow-right ms-2"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+    
+                    <!-- Suggestions Section -->
+                    <div class="mb-5">
+                        <h3 class="mb-3"><i class="fas fa-lightbulb text-warning me-2"></i>Suggestions</h3>
+                        <p>To further improve air quality and environmental conditions, we recommend the following steps:
+                        </p>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <i class="fas fa-check-circle text-warning me-2"></i> Raising public awareness about air
+                                quality and its impact on health
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-check-circle text-warning me-2"></i> Enforcing comprehensive environmental
+                                laws to curb emissions
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-check-circle text-warning me-2"></i> Promoting research and development in
+                                clean technology
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-check-circle text-warning me-2"></i> Encouraging community participation in
+                                tree-planting campaigns
+                            </li>
+                            <li class="list-group-item">
+                              <a href="https://sdgs.un.org/goals" target="_blank" class="btn btn-link text-decoration-none linkhint">Learn
+                                    More<i class="fas fa-arrow-right ms-2"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+    
+                <!-- Right Section: Logos and Organization Names -->
+                <div class="col-lg-4 mb-4 col-12">
+                    <h5 class="mb-3 text-center"><i class="fas fa-building text-secondary me-2"></i>Organizations operating in this sector</h5>
+                    <div class="list-group">
+                        <a href="https://www.who.int/news-room/feature-stories/detail/what-are-the-who-air-quality-guidelines"
+                            class="list-group-item list-group-item-action d-flex align-items-center text-decoration-none linkhint"
+                            target="_blank">
+                            <img src="../static/images/airorg/WHO_logo.png" alt="WHO Logo" class="me-3" style="width: 50px;">
+                            <strong>World Health Organization (WHO)</strong>
+                        </a>
+                        <a href="https://sdgs.un.org/goals"
+                            class="list-group-item list-group-item-action d-flex align-items-center text-decoration-none linkhint"
+                            target="_blank">
+                            <img src="../static/images/airorg/sdg.png" alt="Sustainable Development Goals" class="me-3" style="width: 50px;">
+                            <strong>Sustainable Development Goals (SDGs)</strong>
+                        </a>
+                        <a href="https://www.epa.gov/"
+                            class="list-group-item list-group-item-action d-flex align-items-center text-decoration-none linkhint">
+                            <img src="../static/images/airorg/epa.png" alt="EPA Logo" class="me-3" style="width: 50px;">
+                            <strong>Environmental Protection Agency (EPA)</strong>
+                        </a>
+                        <a href="https://www.airnow.gov/wildfires/after-a-fire/"
+                            class="list-group-item list-group-item-action d-flex align-items-center text-decoration-none linkhint"
+                            target="_blank">
+                            <img src="../static/images/airorg/airnow.png" alt="AirNow Logo" class="me-3" style="width: 50px;">
+                            <strong>AirNow</strong>
+                        </a>
+                        <a href="https://openweathermap.org/"
+                            class="list-group-item list-group-item-action d-flex align-items-center text-decoration-none linkhint"
+                            target="_blank">
+                            <img src="../static/images/airorg/OpenWheater.png" alt="Open Weather Logo" class="me-3" style="width: 50px;">
+                            <strong>Open Weather</strong>
+                        </a>
+                        <a href="https://www.iqair.com/world-air-quality"
+                            class="list-group-item list-group-item-action d-flex align-items-center text-decoration-none linkhint"
+                            target="_blank">
+                            <img src="../static/images/airorg/iqair-logo.jpg" alt="IQAir Logo" class="me-3" style="width: 90px;">
+                            <strong>IQAir | First in Air Quality</strong>
+                        </a>
+                        <a href="https://aqicn.org/"
+                            class="list-group-item list-group-item-action d-flex align-items-center text-decoration-none linkhint"
+                            target="_blank">
+                            <img src="../static/images/airorg/aqi-transparent.png" alt="AQI Logo" class="me-3" style="width: 50px;">
+                            <strong>Real-time Air Quality Index (AQI)</strong>
+                        </a>
+                        <a href="https://www.healthdata.org/research-analysis/health-risks-issues/air-pollution"
+                            class="list-group-item list-group-item-action d-flex align-items-center text-decoration-none linkhint"
+                            target="_blank">
+                            <img src="../static/images/airorg/ihme_logo.png" alt="IHME Logo" class="me-3" style="width: 50px;">
+                            <strong>Institute for Health Metrics and Evaluation (IHME)</strong>
+                        </a>
+                        <a href="https://www.healthdata.org/research-analysis/health-risks-issues/air-pollution"
+                            class="list-group-item list-group-item-action d-flex align-items-center text-decoration-none linkhint"
+                            target="_blank">
+                            <img src="../static/images/airorg/iied.webp" alt="IIED Logo" class="me-3" style="width: 50px;">
+                            <strong>International Institute for Environment and Development (IIED)</strong>
+                        </a>
+                        <a href="https://www.niehs.nih.gov/"
+                            class="list-group-item list-group-item-action d-flex align-items-center text-decoration-none linkhint"
+                            target="_blank">
+                            <img src="../static/images/airorg/NIH.png" alt="NIEHS Logo" class="me-3" style="width: 50px;">
+                            <strong>National Institute of Environmental Health Sciences (NIEHS)</strong>
+                        </a>
+                        <a href="https://www.env-health.org/"
+                            class="list-group-item list-group-item-action d-flex align-items-center text-decoration-none linkhint"
+                            target="_blank">
+                            <img src="../static/images/airorg/HEAL.png" alt="HEAL Logo" class="me-3" style="width: 70px;">
+                            <strong>Health and Environment Alliance (HEAL)</strong>
+                        </a>
+                        <a href="https://www.globalactionplan.org.uk/"
+                            class="list-group-item list-group-item-action d-flex align-items-center text-decoration-none linkhint"
+                            target="_blank">
+                            <img src="../static/images/airorg/globleaction.png" alt="Global Action Plan Logo" class="me-3" style="width: 40px;">
+                            <strong>Global Action Plan (GAP)</strong>
+                        </a>
+                        <p class="text-decoration-none text-dark list-group-item list-group-item-action">
+                            Along with these and other organizations, we will also work in the field of awareness and air quality. 
+                            <a href="about.html" class="text-decoration-none fw-bold linkhint">
+                              Learn more about us!
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Sources Section -->
+            <div class="mt-2">
+                <hr>
+                <h3 class="mb-4"><i class="fas fa-book  me-2"></i>Sources</h3>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check-circle  me-2"></i> Ambient (outdoor) air pollution - <a
+                            href="https://www.who.int/news-room/fact-sheets/detail/ambient-(outdoor)-air-quality-and-health"
+                            target="_blank" class="text-decoration-none">Visit Source</a>
+                    </li>
+                    <li><i class="fas fa-check-circle  me-2"></i> Air quality guidelines? - <a
+                            href="https://www.who.int/news-room/feature-stories/detail/what-are-the-who-air-quality-guidelines"
+                            target="_blank" class="text-decoration-none">Visit Source</a>
+                    </li>
+
+                    <li><i class="fas fa-check-circle  me-2"></i> EPA Clean Air Act Overview - <a
+                            href="https://www.epa.gov/clean-air-act-overview" target="_blank"
+                            class="text-decoration-none">Visit Source</a></li>
+                    <li><i class="fas fa-check-circle me-2"></i> AirNow Global AQI Info - <a
+                            href="https://www.airnow.gov/aqi-and-health/" target="_blank" class="text-decoration-none">Visit
+                            Source</a>
+                    </li>
+                    <li><i class="fas fa-check-circle me-2"></i> SDG Progress Report (2024) - <a
+                            href="https://unstats.un.org/sdgs/files/report/2024/SG-SDG-Progress-Report-2024-advanced-unedited-version.pdf"
+                            target="_blank" class="text-decoration-none"
+                            download="SDG-Progress-Report-2024.pdf">Download</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+
+
+    
+
+
+
+    <!-- Footer Section -->
+    <footer class=" bg-light text-dark py-5">
+        <div class="container">
+            <div class="row gy-4 border-bottom pb-4">
+                <div class="col-md-3 col-12">
+                    <a class="navbar-brand d-flex justify-content-center" href="{% url "index" %}">
+                        <img src=" {% static 'ui/images/icon/air quality prediction.svg' %}" alt="Logo" width="160" height="160"
+                            style="margin-top: -20px; margin-bottom: -10px;">
+                    </a>
+                    <h4 class="fw-bold text-center mt-3">Air Quality Prediction</h4>
+                    <p class="text-center">
+                        We provide real-time air quality monitoring and personalized health insights to help you improve
+                        your surroundings and well-being.
+                    </p>
+                </div>
+
+                <div class="col-md-3 col-12">
+                    <h5 class="fw-bold text-center">Useful Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#createUsertype"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Home</a>
+                        </li>
+                        <li><a href="{% url "about" %}"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">About</a>
+                        </li>
+                        <li><a href="{% url 'index'%}#overvision"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Vision</a>
+                        </li>
+                        <li><a href="{% url 'index' %}#levelair" class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Air
+                                Levels</a></li>
+                        <li><a href="{% url "termandcondition" %}"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Terms and
+                                Conditions</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 col-12">
+                    <h5 class="fw-bold text-center">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#timeSerise"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Graph
+                                Visualization</a></li>
+                        <li><a href="{% url 'index' %}#createUsertype"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Individual
+                                Prediction</a></li>
+                        <li><a href="{% url 'index' %}#createUsertype"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Organization
+                                Prediction</a></li>
+                        <li><a href="{% url "login" %}"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Create
+                                Account</a></li>
+                        <li><a href="{% url 'index' %}#airqualityReanges"
+                                    class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">
+                                Air Quality Color Ranges
+                            </a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 col-12">
+                    <h5 class="fw-bold text-center">Mor Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#Frequentlyqus"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Frequently Question</a></li>
+                        <li><a href="{% url "mp10" %}"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Pollutant PM10</a></li>
+                        <li><a href="{% url "mp25" %}"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Pollutant PM 2.5</a></li>
+                        <li><a href="{% url "environmental_pollution" %}"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Environmental Pollution</a></li>
+                        <li><a href="{% url "health_care_preservation" %}"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Healthcare Preservation</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Footter Second Part-->
+            <div class="row text-center mt-4 d-flex justify-content-between">
+                <!-- social Medai -->
+                <div class="col-lg-6 col-md-12 mb-3">
+                    <h5 class="fw-bold">Follow Us</h5>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="#" class="text-dark fs-4 sociamedia"><i class="fa-brands fa-facebook"
+                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="Facebook"></i></a>
+                        <a href="#" class="text-dark fs-4 sociamedia"><i class="fa-brands fa-instagram"
+                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="Instagram"></i>
+                            <a href="#" class="text-dark  sociamedia fs-4"><i class="fa-brands fa-github"
+                                    data-bs-toggle="tooltip" data-bs-placement="bottom" title="GitHub"></i></a>
+                            <a href="#" class="text-dark  sociamedia fs-4"><i class="fa-brands fa-kaggle"
+                                    data-bs-toggle="tooltip" data-bs-placement="bottom" title="Kaggle"></i></a>
+                    </div>
+                </div>
+
+
+                <!-- Subscribe -->
+                <div class="col-lg-4 col-md-12 mb-3">
+                    <h5 class="fw-bold text-start">Subscribe</h5>
+                    <form id="emailForm" novalidate>
+                        <div class="input-group justify-content-center">
+                            <input type="email" class="form-control w-50" id="emailInput" placeholder="Enter your email"
+                                pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+,-\.[a-zA-Z]{2,}$" required>
+                            <button class="btn btn-dark" type="submit">Subscribe</button>
+                            <div class="invalid-feedback text-center mt-2">Please enter a valid email address. This field cannot be empty.
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+
+
+
+
+    <!-- Popover and back to top -->
+    <script>
+        // Initialize all tooltips
+        document.addEventListener('DOMContentLoaded', function () {
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+        });
+
+        // Show/Hide Back to Top Button
+        const backToTop = document.getElementById("backToTop");
+
+        window.addEventListener("scroll", () => {
+            if (window.scrollY > 200) {
+                backToTop.style.display = "flex";
+            } else {
+                backToTop.style.display = "none";
+            }
+        });
+
+        // Scroll to Top on Click
+        backToTop.addEventListener("click", () => {
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth",
+            });
+        });
+    </script>
+
+    <footer class="text-white text-center py-3 footerpart">
+        <p>&copy; <span id="currentYear"></span> Air Quality Monitoring. All Rights Reserved.</p>
+    </footer>
+    
+    <script>
+        document.getElementById("currentYear").textContent = new Date().getFullYear();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script src="../static/js/main.js"></script>
+    <script src="../static/js/potly.js"></script>
+    <script src="../static/js/bubbleMessenger.js"></script>
+    <script src="../static/js/contact.js"></script>
+    <script src="../static/js/subscribe.js"></script>
+    <script src="../static/js/profileinduvisial.js"></script>
+    <script src="../static/js/location.js"></script>
+    <script src="../static/js/countrydetails.js"></script>
+
+
+
+
+</body>
+
+</html>

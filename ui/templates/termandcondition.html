@@ -1,0 +1,453 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Quality Real Time Data Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+
+    <!-- Optional for Font Awesome Icons -->
+    <!-- Make sure you include Font Awesome CDN link -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+
+    <link rel="stylesheet" href="{% static 'ui/css/style.css' %}">
+
+    <!-- Add Plotly.js Library -->
+    <script src="https://cdn.plot.ly/plotly-2.26.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+
+</head>
+
+<body>
+
+    <!-- Back to Top Button -->
+    <div id="backToTop" class="d-flex">
+        <i class="fas fa-arrow-up" style="font-size: 1.5rem; color: rgb(255, 255, 255);"></i>
+    </div>
+
+    <!-- Messenger Bubble -->
+    <div id="messengerBubble" class="shadow" data-bs-toggle="tooltip" data-bs-placement="bottom"
+        title="Get Information!">
+        <i class="fa-solid fa-message"></i>
+    </div>
+    <!-- Chat Body -->
+    <div id="chatBox">
+        <div id="chatHeader">Messenger</div>
+        <!-- Accodion Only User Click Open it -->
+        <div class="accordion" id="accordionExample">
+            <!--The First Ithem -->
+            <div class="accordion- p-1 accordion-border">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                        Account Type For Air Prediction
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne"
+                    data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <div class="list-group">
+                            <button class="list-group-item list-group-item-action"
+                                onclick="showDescription('induviaccount')">Individual User</button>
+                            <button class="list-group-item list-group-item-action"
+                                onclick="showDescription('orgaccount')">Organization User</button>
+                        </div>
+
+                        <!-- Description section -->
+                        <div id="description" class="mt-1 text-center">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--The Seconde Ithem-->
+            <div class="accordion-item p-1 accordion-border">
+                <h2 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        Send Your Question?
+                    </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                    data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <form id="chatFooter" class="d-block needs-validation" novalidate>
+                            <!-- Name Field -->
+                            <div class="form-floating mb-1 col-md-12 col-12">
+                                <input type="text" class="form-control" id="bubblemessengerName" placeholder="Name"
+                                    required>
+                                <label for="bubblemessengerName">Name</label>
+                                <div class="invalid-feedback">Please enter your name.</div>
+                            </div>
+
+                            <!-- Phone Field -->
+                            <div class="form-floating mb-1 col-md-12 col-12">
+                                <input type="tel" class="form-control" id="bubblemessengerPhone" placeholder="Phone"
+                                    pattern="^\+?[0-9\s\-]{7,15}$" required>
+                                <label for="bubblemessengerPhone">Phone</label>
+                                <div class="invalid-feedback">Please enter a valid phone number (e.g., +123456789).
+                                </div>
+                            </div>
+
+                            <!-- Email Field -->
+                            <div class="form-floating mb-1 col-md-12 col-12">
+                                <input type="email" class="form-control" id="bubblemessengerEmail" placeholder="Email"
+                                    required>
+                                <label for="bubblemessengerEmail">Email</label>
+                                <div class="invalid-feedback">Please enter a valid email address.</div>
+                            </div>
+
+                            <!-- Question Field -->
+                            <div class="form-floating mb-1 col-md-12 col-12">
+                                <textarea class="form-control" id="bubblemessengerQuestion" placeholder="Question"
+                                    style="height: 100px;" required></textarea>
+                                <label for="bubblemessengerQuestion">Question</label>
+                                <div class="invalid-feedback">Please enter your question.</div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit"
+                                class="btn btn-primary mt-2 col-md-12 col-12 btn-chat-submit">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Accodion Only User Click Open it -->
+    </div>
+    <!-- header -->
+    <header class="text-white text-center py-3">
+        <h1 class="text-center">Air Quality Prediction</h1>
+        <p class="text-center">Real-Time Air Quality Prediction and Classification System</p>
+    </header>
+    <!-- Navbar Section -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container bg-light">
+            <!-- Logo on the Left -->
+            <a class="navbar-brand" href="index.html">
+                <img src="{% static 'ui/images/icon/air quality prediction.svg' %}" alt="Logo" width="100" height="100"
+                    style="margin-top: -20px; margin-bottom: -10px;">
+            </a>
+
+            <!-- Centered Menu Items -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto text-center">
+                    <li class="nav-item">
+                        <a class="nav-link active fw-bold" aria-current="page" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold" href="#">Prediction</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold" href="#">Vision</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold" href="#">Levels</a>
+                    </li>
+                </ul>
+                <!-- Login Icon on the Right -->
+                <a href="{% url 'login'%}"
+                    class="navbar-login-icon d-flex justify-content-center ms-auto text-decoration-none loginpro"
+                    data-bs-toggle="tooltip" data-bs-placement="bottom" title="Login">
+                    <i class="fa-solid fa-right-to-bracket" style="font-size: 2rem;"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+
+
+
+
+
+    <style>
+        .fa-check {
+            color: #28a745;
+            margin-right: 8px;
+        }
+
+        .form-check-input {
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-check-input.is-invalid {
+            border-color: #dc3545;
+            box-shadow: 0 0 5px #dc3545;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .form-check-input:checked {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+    </style>
+
+
+    <!-- term and Codition -->
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-md-12 col-12 mx-auto">
+                <h2 class="text-start mb-2 fw-bold">Terms and Conditions</h2>
+                <div class="container py-2">
+                    <div class="row">
+                        <div class="col-lg-12 col-12 mx-auto">
+                            <p>
+                                Welcome to our air pollution monitoring website. Our mission is to provide accurate,
+                                reliable, and up-to-date
+                                information about air quality, enabling users to make informed decisions to protect
+                                their health and the
+                                environment. Our website ensures that all data provided is validated and displayed
+                                accurately. We are committed to
+                                maintaining the confidentiality of user information during the registration process and
+                                throughout the use of our
+                                services. This platform offers real-time air quality data, pollution level trends, and
+                                recommendations for reducing
+                                exposure to harmful pollutants. Users can access customized reports and submit inquiries
+                                to receive expert advice on
+                                environmental protection. Our website actively collaborates with leading organizations
+                                in the field, including <a href="https://www.iqair.com" target="_blank"
+                                    class="important text-decoration-none">IQAir</a>, <a href="https://nepa.gov.af"
+                                    target="_blank" class="important text-decoration-none">NEPA</a>, <a
+                                    href="https://openaq.org" target="_blank"
+                                    class="important text-decoration-none">OpenAQ</a>, <a href="https://www.who.int"
+                                    target="_blank" class="important text-decoration-none">WHO</a>, <a
+                                    href="https://aqicn.org" target="_blank"
+                                    class="important text-decoration-none">AQICN</a>, <a href="https://www.gcint.org"
+                                    target="_blank" class="important text-decoration-none">Green Cross</a>, and <a
+                                    href="https://openweathermap.org" target="_blank"
+                                    class="important text-decoration-none">OpenWeather</a>. By working closely with
+                                these organizations, we aim to enhance our services
+                                and provide users with trustworthy and actionable information. Together, we strive to
+                                create a cleaner and healthier
+                                environment for all.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <p class="mb-3 fw-bold">By using this website, you agree to the following terms and conditions:</p>
+                <div class="mb-4">
+                    <p><i class="fa-solid fa-check"></i>The registration process ensures the confidentiality of all
+                        personal data.</p>
+                    <p><i class="fa-solid fa-check"></i>The organization guarantees that all questions and responses are
+                        handled securely and privately.</p>
+                    <p><i class="fa-solid fa-check"></i>All information provided is validated before being made
+                        available to users.</p>
+                    <p><i class="fa-solid fa-check"></i>The website reserves the right to improve its services based on
+                        user feedback.</p>
+                </div>
+
+                <form id="termsForm">
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="privacyPolicy">
+                        <label class="form-check-label" for="privacyPolicy">
+                            I agree to the Privacy Policy regarding data collection and storage.
+                        </label>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="dataValidation">
+                        <label class="form-check-label" for="dataValidation">
+                            I acknowledge that all data will be verified before it is shared.
+                        </label>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="confidentiality">
+                        <label class="form-check-label" for="confidentiality">
+                            I understand that all information shared with the organization is confidential.
+                        </label>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="feedbackConsent">
+                        <label class="form-check-label" for="feedbackConsent">
+                            I agree to provide constructive feedback to help improve services.
+                        </label>
+                    </div>
+                    <div class="error-message py-3" id="errorMessage">
+                        Please accept all terms and conditions before proceeding.
+                    </div>
+                    <button type="submit" class="btn btn-dark col-md-4 col-12">Accept Terms and Continue</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Footer Section -->
+    <footer class=" bg-light text-dark py-5">
+        <div class="container">
+            <div class="row gy-4 border-bottom pb-4">
+                <div class="col-md-3 col-12">
+                    <a class="navbar-brand d-flex justify-content-center" href="{% url "index" %}">
+                        <img src=" {% static 'ui/images/icon/air quality prediction.svg' %}" alt="Logo" width="160" height="160"
+                            style="margin-top: -20px; margin-bottom: -10px;">
+                    </a>
+                    <h4 class="fw-bold text-center mt-3">Air Quality Prediction</h4>
+                    <p class="text-center">
+                        We provide real-time air quality monitoring and personalized health insights to help you improve
+                        your surroundings and well-being.
+                    </p>
+                </div>
+
+                <div class="col-md-3 col-12">
+                    <h5 class="fw-bold text-center">Useful Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#createUsertype"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Home</a>
+                        </li>
+                        <li><a href="{% url "about" %}"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">About</a>
+                        </li>
+                        <li><a href="{% url 'index'%}#overvision"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Vision</a>
+                        </li>
+                        <li><a href="{% url 'index' %}#levelair" class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Air
+                                Levels</a></li>
+                        <li><a href="{% url "termandcondition" %}"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Terms and
+                                Conditions</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 col-12">
+                    <h5 class="fw-bold text-center">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#timeSerise"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Graph
+                                Visualization</a></li>
+                        <li><a href="{% url 'index' %}#createUsertype"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Individual
+                                Prediction</a></li>
+                        <li><a href="{% url 'index' %}#createUsertype"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Organization
+                                Prediction</a></li>
+                        <li><a href="{% url "login" %}"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Create
+                                Account</a></li>
+                        <li><a href="{% url 'index' %}#airqualityReanges"
+                                    class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">
+                                Air Quality Color Ranges
+                            </a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 col-12">
+                    <h5 class="fw-bold text-center">Mor Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#Frequentlyqus"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Frequently Question</a></li>
+                        <li><a href="{% url "mp10" %}"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Pollutant PM10</a></li>
+                        <li><a href="{% url "mp25" %}"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Pollutant PM 2.5</a></li>
+                        <li><a href="{% url "environmental_pollution" %}"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Environmental Pollution</a></li>
+                        <li><a href="{% url "health_care_preservation" %}"
+                                class="text-dark text-center text-decoration-none d-block mb-2 footerlinks">Healthcare Preservation</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Footter Second Part-->
+            <div class="row text-center mt-4 d-flex justify-content-between">
+                <!-- social Medai -->
+                <div class="col-lg-6 col-md-12 mb-3">
+                    <h5 class="fw-bold">Follow Us</h5>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="#" class="text-dark fs-4 sociamedia"><i class="fa-brands fa-facebook"
+                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="Facebook"></i></a>
+                        <a href="#" class="text-dark fs-4 sociamedia"><i class="fa-brands fa-instagram"
+                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="Instagram"></i>
+                            <a href="#" class="text-dark  sociamedia fs-4"><i class="fa-brands fa-github"
+                                    data-bs-toggle="tooltip" data-bs-placement="bottom" title="GitHub"></i></a>
+                            <a href="#" class="text-dark  sociamedia fs-4"><i class="fa-brands fa-kaggle"
+                                    data-bs-toggle="tooltip" data-bs-placement="bottom" title="Kaggle"></i></a>
+                    </div>
+                </div>
+
+
+                <!-- Subscribe -->
+                <div class="col-lg-4 col-md-12 mb-3">
+                    <h5 class="fw-bold text-start">Subscribe</h5>
+                    <form id="emailForm" novalidate>
+                        <div class="input-group justify-content-center">
+                            <input type="email" class="form-control w-50" id="emailInput" placeholder="Enter your email"
+                                pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+,-\.[a-zA-Z]{2,}$" required>
+                            <button class="btn btn-dark" type="submit">Subscribe</button>
+                            <div class="invalid-feedback text-center mt-2">Please enter a valid email address. This field cannot be empty.
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+
+
+
+
+    <!-- Popover and back to top -->
+    <script>
+        // Initialize all tooltips
+        document.addEventListener('DOMContentLoaded', function () {
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+        });
+
+        // Show/Hide Back to Top Button
+        const backToTop = document.getElementById("backToTop");
+        window.addEventListener("scroll", () => {
+            if (window.scrollY > 200) {
+                backToTop.style.display = "flex";
+            } else {
+                backToTop.style.display = "none";
+            }
+        });
+
+        // Scroll to Top on Click
+        backToTop.addEventListener("click", () => {
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth",
+            });
+        });
+    </script>
+
+    <!-- footer -->
+    <footer class="text-white text-center py-3 footerpart">
+        <p>&copy; <span id="currentYear"></span> Air Quality Monitoring. All Rights Reserved.</p>
+    </footer>
+    
+    <script>
+        document.getElementById("currentYear").textContent = new Date().getFullYear();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script src="{% static 'ui/js/main.js' %}"></script>
+    <script src="{% static 'ui/js/potly.js' %}"></script>
+    <script src="{% static 'ui/js/bubbleMessenger.js' %}"></script>
+    <script src="{% static 'ui/js/contact.js' %}"></script>
+    <script src="{% static 'ui/js/subscribe.js' %}"></script>
+    <script src="{% static 'ui/js/termcondition.js' %}"></script>
+
+
+
+
+</body>
+
+</html>
