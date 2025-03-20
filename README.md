@@ -24,7 +24,8 @@ You can set up and run this project in two ways:
 If you want to clone the project and install dependencies in one go, follow these steps:  
 
 #### Clone the repository
-git clone https://github.com/your-username/your-repository.git
+[git clone https://github.com/your-username/your-repository.git](https://github.com/MohWasil/AI-Based_Air-Quality-Prediction-and-Classification_System.git)
+
 
 #### Navigate into the project directory
 `cd your-repository`
