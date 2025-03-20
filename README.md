@@ -27,19 +27,19 @@ If you want to clone the project and install dependencies in one go, follow thes
 git clone https://github.com/your-username/your-repository.git
 
 #### Navigate into the project directory
-cd your-repository
+`cd your-repository`
 
 #### Create a virtual environment optional
-python -m venv venv
+`python -m venv venv`
 
-`On Mac and Linux`
-source venv/bin/activate 
+`On Mac and Linux` <br>
+`venv/bin/activate` 
 
-`On Windows`
-venv\Scripts\activate
+`On Windows` <br>
+`venv\Scripts\activate`
 
 #### Install dependencies
-pip install -r requirements.txt
+`pip install -r requirements.txt`
 
 ### 2. Download and Install Dependencies Manually  
 
@@ -52,12 +52,12 @@ Alternatively, you can download the project as a ZIP file and install the depend
 
   python -m venv venv
   
-  `On Mac and Linux`
-  source venv/bin/activate 
+  `On Mac and Linux` <br>
+  `venv/bin/activate` 
   
-  `On Windows`
-  venv\Scripts\activate
+  `On Windows` <br>
+  `venv\Scripts\activate`
 
-####5. Install dependencies:  
-   pip install -r requirements.txt
+#### 5. Install dependencies:  
+   `pip install -r requirements.txt`
 
