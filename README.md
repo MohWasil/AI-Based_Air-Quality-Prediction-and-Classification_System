@@ -14,3 +14,50 @@ The proposed real-time air quality prediction system follows a structured pipeli
  Models selected for the project is RandomForest for classification and TSMixer for Regression. in addition to this Reinforcment learning PPO model
  is used to make more robust unexpected features in the future.
  
+
+## Getting Started  
+
+You can set up and run this project in two ways:  
+
+### 1. Clone the Repository Directly  
+
+If you want to clone the project and install dependencies in one go, follow these steps:  
+
+#### Clone the repository
+git clone https://github.com/your-username/your-repository.git
+
+#### Navigate into the project directory
+cd your-repository
+
+#### Create a virtual environment optional
+python -m venv venv
+
+`On Mac and Linux`
+source venv/bin/activate 
+
+`On Windows`
+venv\Scripts\activate
+
+#### Install dependencies
+pip install -r requirements.txt
+
+### 2. Download and Install Dependencies Manually  
+
+Alternatively, you can download the project as a ZIP file and install the dependencies manually:  
+
+1. Click the **Code** button on GitHub and select **Download ZIP**.  
+2. Extract the ZIP file to your desired location.  
+3. Open a terminal or command prompt and navigate to the extracted folder.  
+4. (Optional) Create and activate a virtual environment:  
+
+  python -m venv venv
+  
+  `On Mac and Linux`
+  source venv/bin/activate 
+  
+  `On Windows`
+  venv\Scripts\activate
+
+####5. Install dependencies:  
+   pip install -r requirements.txt
+
