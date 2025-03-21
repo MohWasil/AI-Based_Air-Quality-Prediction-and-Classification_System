@@ -1,5 +1,5 @@
 # AI Driven Air-Quality-Prediction-and-Classification monitor system.
-The proposed real-time air quality prediction system follows a structured pipeline integrating data acquisition, preprocessing, model selection, and deployment. Historical and real-time air quality data are collected from the NEPA and OpenWeather API, undergoing preprocessing techniques such as outlier correction, feature engineering, and time-series transformations. Machine learning models (Random Forest, XGBoost) are employed for classification, while deep learning models (LSTM, TSMixer) are used for pollutant concentration forecasting. Hyperparameter tuning and explainable AI techniques (SHAP, LIME) enhance model interpretability and performance evaluation. Finally, the system is deployed in a real-time environment, integrating web applications and mobile-based alerts, ensuring timely air quality updates for decision-makers and the public.
+This project develops a real-time air quality prediction system that collects historical and real-time data from the NEPA and OpenWeather API. The data is preprocessed with techniques like outlier correction and feature engineering, and then analyzed using machine learning models (Random Forest, XGBoost) for classification and deep learning models (LSTM, TSMixer) for pollutant concentration forecasting. Hyperparameter tuning and explainable AI techniques like SHAP and LIME are used to improve model performance and interpretability. The system is deployed in a real-time environment, with a web application for visualizing air quality data and mobile-based alerts to keep users informed of air quality changes.
 
 **Project Consist of these steps:**
   **1. Data Collection:**
@@ -61,4 +61,28 @@ Alternatively, you can download the project as a ZIP file and install the depend
 
 #### 5. Install dependencies:  
    `pip install -r requirements.txt`
+
+**After installing dependencies you need to follow these steps:**
+**Note:**
+Please before migration or running the server you need to go to predict folder --> MLAutomation --> .env file.
+in the env file you need to have three API key for the current use.
+first one is OpenAI api key.
+second is Openweather and the last one if from timezone.
+You need to have their API's to use the project. Variables are declared just paste your API's and use them.
+links are bellow.
+[OpenAI Website](https://openai.com/)
+[OpenWeather Website](https://openweathermap.org/api/air-pollution)
+[TimeZone Website](https://timezonedb.com/)
+
+#### 1. Makemigrations.
+use this command in your project directory terminal
+`python manage.py makemigrations`
+
+#### 2. Migrate.
+Now migrate the project.
+`python manage.py migrate`
+
+#### 3. Run The suerver.
+Use this command to run the server locally.
+`python manage.py runserver`
 
