@@ -64,25 +64,25 @@ Alternatively, you can download the project as a ZIP file and install the depend
 
 **After installing dependencies you need to follow these steps:**
 **Note:**
-Please before migration or running the server you need to go to predict folder --> MLAutomation --> .env file.
-in the env file you need to have three API key for the current use.
-first one is OpenAI api key.
-second is Openweather and the last one if from timezone.
-You need to have their API's to use the project. Variables are declared just paste your API's and use them.
-links are bellow.
-[OpenAI Website](https://openai.com/)
-[OpenWeather Website](https://openweathermap.org/api/air-pollution)
-[TimeZone Website](https://timezonedb.com/)
+Please before migration or running the server you need to go to `predict folder --> MLAutomation --> .env file`.
+in the env file you need to have three API key for the current use. <br>
+first one is OpenAI api key.<br>
+second is Openweather and the last one if from timezone.<br>
+You need to have their API's to use the project. Variables are declared just paste your API's and use them. <br>
+links are bellow.<br>
+[OpenAI Website](https://openai.com/)<br>
+[OpenWeather Website](https://openweathermap.org/api/air-pollution)<br>
+[TimeZone Website](https://timezonedb.com/)<br>
 
 #### 1. Makemigrations.
-use this command in your project directory terminal
+use this command in your project directory terminal <br>
 `python manage.py makemigrations`
 
 #### 2. Migrate.
-Now migrate the project.
+Now migrate the project. <br>
 `python manage.py migrate`
 
 #### 3. Run The suerver.
-Use this command to run the server locally.
+Use this command to run the server locally. <br>
 `python manage.py runserver`
 
