@@ -62,8 +62,8 @@ Alternatively, you can download the project as a ZIP file and install the depend
 #### 5. Install dependencies:  
    `pip install -r requirements.txt`
 
-**After installing dependencies you need to follow these steps:**
-**Note:**
+**After installing dependencies you need to follow these steps:** <br>
+**Note:** <br>
 Please before migration or running the server you need to go to `predict folder --> MLAutomation --> .env file`.
 in the env file you need to have three API key for the current use. <br>
 first one is OpenAI api key.<br>
