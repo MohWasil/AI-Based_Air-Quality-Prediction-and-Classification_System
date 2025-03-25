@@ -1,7 +1,7 @@
 # 🌍💨 AI Driven Air-Quality-Prediction-and-Classification monitor system 📊🌱
 This project develops a real-time air quality prediction system that collects historical and real-time data from the `NEPA` and `OpenWeather API`. The data is preprocessed with techniques like outlier correction and feature engineering, and then analyzed using machine learning models `(Random Forest, XGBoost)` for classification and deep learning models `(LSTM, TSMixer)` for pollutant concentration forecasting. Hyperparameter tuning and explainable AI techniques like `SHAP` and `LIME` are used to improve model performance and interpretability. The system is deployed in a real-time environment, with a web application for visualizing air quality data and mobile-based alerts to keep users informed of air quality changes.
 
-**🔧 Project Consist of these steps: 📝**
+**🔧 Project Consist of these steps: 📝** <br>
   **1. 📊 Data Collection:**
   Data is been collected from NEPA (National Environmental Protection Agency) of Afghanistan & OpenWeather for ten days.
 
@@ -60,7 +60,7 @@ Alternatively, you can download the project as a ZIP file and install the depend
   2. Extract the ZIP file to your desired location.  
   3. Open a terminal or command prompt and navigate to the extracted folder.  
   4. (Optional) Create and activate a virtual environment:  
-  
+  #### Navigate into the project directory
   `cd your-extracted-folder`
   #### Mac and Linux
   ```bash
