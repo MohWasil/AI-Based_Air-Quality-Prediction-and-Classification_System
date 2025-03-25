@@ -1,16 +1,16 @@
-# AI Driven Air-Quality-Prediction-and-Classification monitor system.
-This project develops a real-time air quality prediction system that collects historical and real-time data from the NEPA and OpenWeather API. The data is preprocessed with techniques like outlier correction and feature engineering, and then analyzed using machine learning models (Random Forest, XGBoost) for classification and deep learning models (LSTM, TSMixer) for pollutant concentration forecasting. Hyperparameter tuning and explainable AI techniques like SHAP and LIME are used to improve model performance and interpretability. The system is deployed in a real-time environment, with a web application for visualizing air quality data and mobile-based alerts to keep users informed of air quality changes.
+# 🌍💨 AI Driven Air-Quality-Prediction-and-Classification monitor system 📊🌱
+This project develops a real-time air quality prediction system that collects historical and real-time data from the `NEPA` and `OpenWeather API`. The data is preprocessed with techniques like outlier correction and feature engineering, and then analyzed using machine learning models `(Random Forest, XGBoost)` for classification and deep learning models `(LSTM, TSMixer)` for pollutant concentration forecasting. Hyperparameter tuning and explainable AI techniques like `SHAP` and `LIME` are used to improve model performance and interpretability. The system is deployed in a real-time environment, with a web application for visualizing air quality data and mobile-based alerts to keep users informed of air quality changes.
 
-**Project Consist of these steps:**
-  **1. Data Collection:**
+**🔧 Project Consist of these steps: 📝**
+  **1. 📊 Data Collection:**
   Data is been collected from NEPA (National Environmental Protection Agency) of Afghanistan & OpenWeather for ten days.
 
-  **2. Data Preprocessing:**
+  **2. 🧹 Data Preprocessing:**
   * For this project Advance Preprocessing methods are used such as using **FTLRI** & **KNN** for imputation.
   * **K-means clustring** to cluster the locations.
   * **Lag & Rolling** for making history the dataset. and other methods.
 
- **3. Models Used:**
+ **3. 🤖 Models Used:**
  Models selected for the project is RandomForest for classification and TSMixer for Regression. in addition to this Reinforcment learning PPO model
  is used to make more robust unexpected features in the future.
  
@@ -51,6 +51,8 @@ venv\Scripts\activate
 ```bash
 pip install -r requirements.txt
 ```
+--- 
+
 ### 2. Download and Install Dependencies Manually 📥
 
 Alternatively, you can download the project as a ZIP file and install the dependencies manually:  
@@ -74,13 +76,15 @@ Alternatively, you can download the project as a ZIP file and install the depend
   ```bash 
   pip install -r requirements.txt
   ```
-### Set up API Keys 🔑
+--- 
+
+### 3. Set up API Keys 🔑
 Before running the server, you need to configure your API keys in the .env file. This file can be found in the `predict/MLAutomation` directory.<br>
 You will need three API keys:
 - **OpenAI API Key**
 - **OpenWeather API Key**
-- **TimeZone API Key**
-You can obtain the necessary API keys from the following websites:.<br>
+- **TimeZone API Key** <br>
+You can obtain the necessary API keys from the following websites:<br>
 - [OpenAI Website](https://openai.com/)<br>
 - [OpenWeather Website](https://openweathermap.org/api/air-pollution)<br>
 - [TimeZone Website](https://timezonedb.com/)<br>
@@ -107,11 +111,13 @@ python manage.py runserver
 Now, your server should be running locally and you can access the application!
 
 ---
+
 ## Troubleshooting ❓
 - If you encounter any issues during setup, ensure that you’ve installed all dependencies correctly.
 - Verify that the API keys are entered correctly in the .env file.
 
 ---
+
 ## Contributing 💡
 We welcome contributions! If you'd like to contribute, please follow these steps:
 Fork the repository.
