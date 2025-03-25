@@ -15,16 +15,22 @@ This project develops a real-time air quality prediction system that collects hi
  is used to make more robust unexpected features in the future.
  
 
-## Getting Started  
+## Getting Started 🚀
 
 You can set up and run this project in two ways:  
+- **Clone the repository directly**
+- **Download and install dependencies manually**
 
-### 1. Clone the Repository Directly  
+---
 
-If you want to clone the project and install dependencies in one go, follow these steps:  
+### 1. Clone the Repository Directly 🧑‍💻
+
+If you want to clone the project and install dependencies in one go, follow these steps:
 
 #### Clone the repository
-https://github.com/MohWasil/AI-Based_Air-Quality-Prediction-and-Classification_System.git
+```bash
+git clone https://github.com/MohWasil/AI-Based_Air-Quality-Prediction-and-Classification_System.git
+
 
 
 #### Navigate into the project directory
