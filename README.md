@@ -34,62 +34,90 @@ git clone https://github.com/MohWasil/AI-Based_Air-Quality-Prediction-and-Classi
 
 
 #### Navigate into the project directory
-cd your-directory
+`cd your-directory`
 
-#### Create a virtual environment optional
+#### Create a virtual environment (optional)
 ##### For Mac
+```bash
 python3 -m venv venv
 source venv/bin/activate
-
-
+```
 ##### On Windows <br>
+```bash
 python -m venv venv
 venv\Scripts\activate
-
+```
 #### Install dependencies
+```bash
 pip install -r requirements.txt
-
-### 2. Download and Install Dependencies Manually  
+```
+### 2. Download and Install Dependencies Manually 📥
 
 Alternatively, you can download the project as a ZIP file and install the dependencies manually:  
-
-1. Click the **Code** button on GitHub and select **Download ZIP**.  
-2. Extract the ZIP file to your desired location.  
-3. Open a terminal or command prompt and navigate to the extracted folder.  
-4. (Optional) Create and activate a virtual environment:  
-
+  1. Click the **Code** button on GitHub and select **Download ZIP**.  
+  2. Extract the ZIP file to your desired location.  
+  3. Open a terminal or command prompt and navigate to the extracted folder.  
+  4. (Optional) Create and activate a virtual environment:  
+  
+  `cd your-extracted-folder`
+  #### Mac and Linux
+  ```bash
   python -m venv venv
-  
-  `On Mac and Linux` <br>
-  `venv/bin/activate` 
-  
-  `On Windows` <br>
-  `venv\Scripts\activate`
+  venv/bin/activate 
+  ```
+  #### Windows
+  ```bash
+  python -m venv venv
+  venv\Scripts\activate
+  ```
+#### Install dependencies:
+  ```bash 
+  pip install -r requirements.txt
+  ```
+### Set up API Keys 🔑
+Before running the server, you need to configure your API keys in the .env file. This file can be found in the `predict/MLAutomation` directory.<br>
+You will need three API keys:
+- **OpenAI API Key**
+- **OpenWeather API Key**
+- **TimeZone API Key**
+You can obtain the necessary API keys from the following websites:.<br>
+- [OpenAI Website](https://openai.com/)<br>
+- [OpenWeather Website](https://openweathermap.org/api/air-pollution)<br>
+- [TimeZone Website](https://timezonedb.com/)<br>
 
-#### 5. Install dependencies:  
-   `pip install -r requirements.txt`
+---
 
-**After installing dependencies you need to follow these steps:** <br>
-**Note:** <br>
-Please before migration or running the server you need to go to `predict folder --> MLAutomation --> .env file`.
-in the env file you need to have three API key for the current use. <br>
-first one is OpenAI api key.<br>
-second is Openweather and the last one if from timezone.<br>
-You need to have their API's to use the project. Variables are declared just paste your API's and use them. <br>
-links are bellow.<br>
-[OpenAI Website](https://openai.com/)<br>
-[OpenWeather Website](https://openweathermap.org/api/air-pollution)<br>
-[TimeZone Website](https://timezonedb.com/)<br>
-
+### 4. Database Setup 🗄️
+After installing the dependencies and setting up your API keys, follow these steps:
 #### 1. Makemigrations.
-use this command in your project directory terminal <br>
-`python manage.py makemigrations`
-
+Use this command in your project directory to create database migrations: <br>
+```bash
+python manage.py makemigrations
+```
 #### 2. Migrate.
-Now migrate the project. <br>
-`python manage.py migrate`
-
+Now, migrate the database to apply the changes: <br>
+```
+python manage.py migrate
+```
 #### 3. Run The suerver.
-Use this command to run the server locally. <br>
-`python manage.py runserver`
+Use this command to run the server locally: <br>
+```
+python manage.py runserver
+```
+Now, your server should be running locally and you can access the application!
 
+---
+## Troubleshooting ❓
+- If you encounter any issues during setup, ensure that you’ve installed all dependencies correctly.
+- Verify that the API keys are entered correctly in the .env file.
+
+---
+## Contributing 💡
+We welcome contributions! If you'd like to contribute, please follow these steps:
+Fork the repository.
+- Create a new branch ```(git checkout -b feature-branch)```.
+- Make your changes.
+- Commit your changes ```(git commit -am 'Add feature')```.
+- Push to the branch ```(git push origin feature-branch)```.
+- Create a new Pull Request.
+---
