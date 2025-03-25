@@ -30,23 +30,24 @@ If you want to clone the project and install dependencies in one go, follow thes
 #### Clone the repository
 ```bash
 git clone https://github.com/MohWasil/AI-Based_Air-Quality-Prediction-and-Classification_System.git
-
+```
 
 
 #### Navigate into the project directory
-`cd your-repository`
+cd your-directory
 
 #### Create a virtual environment optional
-`python -m venv venv`
+##### For Mac
+python3 -m venv venv
+source venv/bin/activate
 
-`On Mac and Linux` <br>
-`venv/bin/activate` 
 
-`On Windows` <br>
-`venv\Scripts\activate`
+##### On Windows <br>
+python -m venv venv
+venv\Scripts\activate
 
 #### Install dependencies
-`pip install -r requirements.txt`
+pip install -r requirements.txt
 
 ### 2. Download and Install Dependencies Manually  
 
