@@ -11,8 +11,7 @@ This project develops a real-time air quality prediction system that collects hi
   * **Lag & Rolling** for making history the dataset. and other methods.
 
  **3. 🤖 Models Used:**
- Models selected for the project is RandomForest for classification and TSMixer for Regression. in addition to this Reinforcment learning PPO model
- is used to make more robust unexpected features in the future.
+ Different models were tested such as XGBoost, LSTM and many others but selected for the project is RandomForest for classification and TSMixer for Regression. 
  
 
 ## Getting Started 🚀
