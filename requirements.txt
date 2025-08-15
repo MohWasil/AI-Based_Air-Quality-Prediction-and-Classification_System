@@ -11,9 +11,9 @@ scipy==1.14.1
 stable_baselines3==2.4.1
 tensorflow==2.18.0
 tensorflow-io-gcs-filesystem==0.31.0
-tensorflow_intel==2.18.0
 tf_keras==2.18.0
 dotenv==1.0.1
+
 
 
 
