@@ -12,7 +12,7 @@ stable_baselines3==2.4.1
 tensorflow==2.18.0
 tensorflow-io-gcs-filesystem==0.31.0
 tf_keras==2.18.0
-dotenv==1.0.1
+python-dotenv==1.0.1
 
 
 
