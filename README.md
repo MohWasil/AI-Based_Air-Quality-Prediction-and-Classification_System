@@ -5,17 +5,17 @@ This project develops a real-time air quality prediction and classification syst
 **🔧 Project Consist of these steps: 📝** <br>
 **Data & preprocessing**
 
-1: Sources: OpenWeather API (10-day rolling ingestion) + Afghanistan NEPA historical stations.
+> 1: Sources: OpenWeather API (10-day rolling ingestion) + Afghanistan NEPA historical stations.
 Cleaning: outlier removal with RobustScaler; missing values imputed via KNN and custom FTLRI method.
 
-2: Feature engineering: rolling statistics, lag features (windowed historic features), weather & location clustering (K-means) to handle regional behavior.
+> 2: Feature engineering: rolling statistics, lag features (windowed historic features), weather & location clustering (K-means) to handle regional behavior.
 Stationarity checks and distribution transforms applied for time-series suitability.
 
 **Models & validation**
 
-1: Classification: Random Forest for discrete AQ categories; metrics: accuracy, confusion matrix (report per-class), precision/recall for imbalanced classes. (Reported accuracy: 99.96 — include validation split & CV details.)
+> 1: Classification: Random Forest for discrete AQ categories; metrics: accuracy, confusion matrix (report per-class), precision/recall for imbalanced classes. (Reported accuracy: 99.96 — include validation split & CV details.)
 
-2: Regression: TSMixer for multi-horizon forecasting (1,3,6,24,48,72h); metrics: MAE = 0.07, MSE = 0.02, R² = 0.98 on hold-out/rolling test set.
+> 2: Regression: TSMixer for multi-horizon forecasting (1,3,6,24,48,72h); metrics: MAE = 0.07, MSE = 0.02, R² = 0.98 on hold-out/rolling test set.
 Robust evaluation using rolling window backtesting to simulate real-time forecasting.
 
 **Advanced & deployment**
