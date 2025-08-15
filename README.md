@@ -1,18 +1,25 @@
-# 🌍💨 AI Driven Air-Quality-Prediction-and-Classification monitor system 📊🌱
+# 🌍💨 Scalable AI-driven air quality forecasting and classification for public health applications 📊🌱
+**Goal** : Provide both individuals (health guidance) and organizations (policy/mitigation recommendations) with real-time, location-aware air quality forecasts and actionable advice.
 This project develops a real-time air quality prediction and classification system that collects historical and real-time data from the `NEPA` and `OpenWeather API`. The data is preprocessed with techniques like outlier correction and feature engineering, and then analyzed using machine learning models `(Random Forest, XGBoost)` for classification and deep learning models `(LSTM, TSMixer)` for pollutant concentration forecasting. Hyperparameter tuning and explainable AI techniques like `SHAP` and `LIME` are used to improve model performance and interpretability. The system is deployed in a real-time environment, with a web application for visualizing air quality data and mobile-based alerts to keep users informed of air quality changes.
 
 **🔧 Project Consist of these steps: 📝** <br>
-  **1. 📊 Data Collection:**
-  Data is been collected from NEPA (National Environmental Protection Agency) of Afghanistan & OpenWeather for ten days.
+**Data & preprocessing**
+1: Sources: OpenWeather API (10-day rolling ingestion) + Afghanistan NEPA historical stations.
+Cleaning: outlier removal with RobustScaler; missing values imputed via KNN and custom FTLRI method.
 
-  **2. 🧹 Data Preprocessing:**
-  * For this project Advance Preprocessing methods are used such as using **FTLRI** & **KNN** for imputation.
-  * **K-means clustring** to cluster the locations.
-  * **Lag & Rolling** for making history the dataset. and other methods.
+2: Feature engineering: rolling statistics, lag features (windowed historic features), weather & location clustering (K-means) to handle regional behavior.
+Stationarity checks and distribution transforms applied for time-series suitability.
 
- **3. 🤖 Models Used:**
- Different models were tested such as XGBoost, LSTM and many others but selected for the project is RandomForest for classification and TSMixer for Regression. 
- 
+**Models & validation**
+1: Classification: Random Forest for discrete AQ categories; metrics: accuracy, confusion matrix (report per-class), precision/recall for imbalanced classes. (Reported accuracy: 99.96 — include validation split & CV details.)
+
+2: Regression: TSMixer for multi-horizon forecasting (1,3,6,24,48,72h); metrics: MAE = 0.07, MSE = 0.02, R² = 0.98 on hold-out/rolling test set.
+Robust evaluation using rolling window backtesting to simulate real-time forecasting.
+
+**Advanced & deployment**
+PPO reinforcement learning agent prototyped to simulate rare/extreme conditions (forest fires, heavy humidity) not well represented in training data — reward function based on health index reduction and mitigation costs.
+Backend: Django REST API serving forecasts; integrations: Twilio (alerts), OpenAI (personalized recommendations), client-side JS + location API.
+`Next steps`: containerize with Docker, add CI/CD, monitoring (model drift alerts), and cloud deployment (GCP/AWS). 
 
 ## Getting Started 🚀
 
