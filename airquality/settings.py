@@ -2,6 +2,9 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path
 
+'django.middleware.security.SecurityMiddleware',
+'whitenoise.middleware.WhiteNoiseMiddleware',
+
 """
 Django settings for airquality project.
 
