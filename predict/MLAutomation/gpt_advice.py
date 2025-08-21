@@ -9,15 +9,6 @@ load_dotenv(".env")
 OPENAI_API_KEY = os.getenv("openai_api_key")
 client = OpenAI(api_key=OPENAI_API_KEY)
 
-# Air quality categories mapping
-# AIR_QUALITY_MAPPING = {
-#     1: "Good",
-#     2: "Fair",
-#     3: "Moderate",
-#     4: "Abnormal",
-#     5: "Dangerous"
-# }
-
 def generate_advice(user_name, air_quality, user_type, latitude, longitude):
     """
     Generate concise advice (7 items) for users or organizations based on air quality and user type.
@@ -31,11 +22,6 @@ def generate_advice(user_name, air_quality, user_type, latitude, longitude):
     Returns:
     - str: Tailored advice for the user or organization.
     """
-    # Map air quality index to category
-    # air_quality = AIR_QUALITY_MAPPING.get(air_quality_index, "Unknown")
-
-    # Initialize the task description
-    task_description = ""
 
     # Define tasks and advice generation logic
     if user_type == "normal_user":
