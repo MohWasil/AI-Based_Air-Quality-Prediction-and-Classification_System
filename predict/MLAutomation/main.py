@@ -62,16 +62,3 @@ class CollectingData:
         data = openweather.obj.collect_air_quality_data(None)
         return openweather.store_data_in_database(data)
 
-
-# if __name__ == '__main__':
-    
-#     obj = CollectingData(lat, long, state, country)
-    
-#     # Based on user location cordinates
-#     res = obj.send_data_by_details()
-#     genereted = gpt_advice.generate_advice(user_name, res[0][0], user_type, location)
-#     clean_generated = gpt_advice.clean_advice_output(genereted)
-    
-    
-#     # Based on default
-#     obj.send_data_by_default()
