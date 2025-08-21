@@ -43,7 +43,7 @@ def predict(request, *args, **kwargs):
     longitude = request.GET.get("longitude")
     
     
-
+    
     collecting_data = CollectingData(latitude, longitude, state, country)
     (classification_result, feature_importance, predic_res) = collecting_data.send_data_by_details()
     classification_result = classification_result[0]
@@ -52,10 +52,8 @@ def predict(request, *args, **kwargs):
     advice = gpt_advice.generate_advice(user_name=full_name, air_quality=classification_result, user_type=user_type, longitude=longitude, latitude=latitude)
     advice_message = gpt_advice.clean_advice_output(advice)
     
-    # advice_message = ["Stay Indoors: Limit all outdoor activities, especially strenuous exercises. Stay indoors as much as possible, keeping windows and doors closed to prevent outdoor air from entering.', 'Use Air Purifiers: If possible, use air purifiers with HEPA filters in your home. This can significantly reduce indoor air pollutants and improve air quality.', 'Wear Masks: If you must go outside, wear an N95 or similar mask that can filter out fine particulate matter. This can help protect your lungs from harmful pollutants.', 'Hydrate: Drink plenty of water to help your body flush out toxins. Staying well-hydrated can also help your respiratory system function better.', 'Monitor Air Quality: Use air quality apps or websites to stay updated on local air quality indexes (AQI). This will help you plan activities when conditions improve.', 'Limit HVAC System Activity: If your heating and cooling system is not equipped with high-efficiency filters, limit its use to reduce circulating dangerous particles. When using it, ensure filters are clean and consider using a standalone air cleaner.', 'Consult Health Professionals: If you experience symptoms like coughing, wheezing, or shortness of breath, seek medical advice promptly. Individuals with pre-existing health conditions should prioritize regular consultations with healthcare providers." , "Hello" , "World news textform"]
-    # print(advice_message)
-    
-    va = {
+    # Classification, Regression, Affected metrics to model and Advice is going to frontend
+    result = {
         "classification_result": classification_result,
         "feature_importance": feature_importance,
         "predic_res": predic_res,
@@ -63,4 +61,4 @@ def predict(request, *args, **kwargs):
     } 
 
 
-    return response.Response(va, status=status.HTTP_200_OK)
+    return response.Response(result, status=status.HTTP_200_OK)
