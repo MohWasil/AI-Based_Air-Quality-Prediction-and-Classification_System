@@ -47,7 +47,7 @@ class Preprocessing:
         predictions = []
         features = ['co', 'no2', 'o3', 'so2', 'pm2_5', 'pm10']
         hourly_pred = ['1H', '3H', '6H', '24H', '48H', '72H']
-        
+        # Checking the metrics
         def metrics(value):
             if value == 1:
                 return 'Good'
@@ -61,7 +61,9 @@ class Preprocessing:
                 return 'Dangerous'
             else:
                 return 'Not recognized'
-            
+        """ Checking the outcome of Regression Model (TSMixer),
+            Classification (RandmomeForestClassifier) and important affected features on
+            model and convert them into alphabitic condition """
         for key, val in result.items():
             if key == "classification_result":
                 for row in val:
@@ -78,7 +80,7 @@ class Preprocessing:
                             classification_result.append("Abnormal")
                         elif metric == 4 and row[metric] == 1:
                             classification_result.append("Dangerous")
-
+            # Feature importance of RandomForest Outcomes
             elif key == "feature_importance":
                 feature_importance.append(zip(features, val))
                                 
@@ -593,9 +595,6 @@ class Preprocessing:
 
 
 if __name__ == '__main__':
-    # data = pd.read_csv("./test.csv")
-    # obj = Preprocessing(data)
-    # obj.preprocess()
     pass
 
 
